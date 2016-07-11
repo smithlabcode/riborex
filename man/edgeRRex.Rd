@@ -1,5 +1,5 @@
-\name{riborex}
-\alias{riborex}
+\name{edgeRRex}
+\alias{edgeRRex}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
@@ -8,7 +8,7 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, engine)
+edgeRRex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,14 +18,11 @@ riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, engine)
   \item{riboCntTable}{
 %%     ~~Describe \code{riboCntTable} here~~
 }
-  \item{rnaCond}{
-%%     ~~Describe \code{rnaCond} here~~
+  \item{rnaCondition}{
+%%     ~~Describe \code{rnaCondition} here~~
 }
-  \item{riboCond}{
-%%     ~~Describe \code{riboCond} here~~
-}
-  \item{engine}{
-%%     ~~Describe \code{engine} here~~
+  \item{riboCondition}{
+%%     ~~Describe \code{riboCondition} here~~
 }
 }
 \details{
@@ -59,17 +56,22 @@ riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, engine)
 ##--	or do  help(data=index)  for the standard data sets.
 
 ## The function is currently defined as
-function (rnaCntTable, riboCntTable, rnaCond, riboCond, engine) 
+function (rnaCntTable, riboCntTable, rnaCondition, riboCondition) 
 {
-    if (engine == "DESeq2") {
-        DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond)
-    }
-    else if (engine == "edgeR") {
-        edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
-    }
-    else if (engine == "Voom") {
-        voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
-    }
+    library(edgeR)
+    condition <- factor(c(rep(0, numCtlRNASmps), rep(1, numCaseRNASmps), 
+        rep(0, numCtlRiboSmps), rep(1, numCaseRiboSmps)))
+    dataType <- factor(c(rep(0, ncol(RNACntTable)), rep(1, ncol(RiboCntTable))))
+    RiboDiff <- factor(c(rep(0, ncol(RNACntTable) + numCtlRiboSmps), 
+        rep(1, numCaseRiboSmps)))
+    combCntTbl <- cbind(RNACntTable, RiboCntTable)
+    dge <- DGEList(counts = combCntTbl)
+    dge <- calcNormFactors(dge)
+    design <- model.matrix(~condition + dataType + RiboDiff)
+    dge <- estimateDisp(dge, design)
+    fit <- glmFit(dge, design)
+    lrt <- glmLRT(fit)
+    topGenes <- topTags(lrt, n = Inf)
   }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

@@ -1,5 +1,5 @@
-\name{DESeq2Rex}
-\alias{DESeq2Rex}
+\name{voomRex}
+\alias{voomRex}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
@@ -8,7 +8,7 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-DESeq2Rex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
+voomRex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -58,22 +58,28 @@ DESeq2Rex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
 ## The function is currently defined as
 function (rnaCntTable, riboCntTable, rnaCondition, riboCondition) 
 {
-    library(DESeq2)
-    combCntTbl <- cbind(rnaCntTable, riboCntTable)
+    library(edgeR)
+    RNACntTable <- read.table(RNACntFile, row.names = 1, header = TRUE)
+    numCaseRNASmps <- ncol(RNACntTable) - numCtlRNASmps
+    group1 <- factor(c(rep(1, numCtlRNASmps), rep(2, numCaseRNASmps)))
+    design1 <- model.matrix(~group1)
+    RiboCntTable <- read.table(RiboCntFile, row.names = 1, header = TRUE)
+    numCaseRiboSmps <- ncol(RiboCntTable) - numCtlRiboSmps
+    group2 <- factor(c(rep(1, numCtlRiboSmps), rep(2, numCaseRiboSmps)))
+    design2 <- model.matrix(~group2)
     condition <- factor(c(rep(0, numCtlRNASmps), rep(1, numCaseRNASmps), 
         rep(0, numCtlRiboSmps), rep(1, numCaseRiboSmps)))
     dataType <- factor(c(rep(0, ncol(RNACntTable)), rep(1, ncol(RiboCntTable))))
     RiboDiff <- factor(c(rep(0, ncol(RNACntTable) + numCtlRiboSmps), 
         rep(1, numCaseRiboSmps)))
-    combColData <- data.frame(condition = condition)
-    combColData$dataType <- dataType
-    combColData$RiboDiff <- RiboDiff
-    rownames(combColData) <- colnames(combCntTbl)
-    dds <- DESeqDataSetFromMatrix(countData = combCntTbl, colData = combColData, 
-        design = ~condition + dataType + RiboDiff)
-    dds <- DESeq(dds)
-    res <- results(dds)
-    res
+    combCntTbl <- cbind(RNACntTable, RiboCntTable)
+    dge <- DGEList(counts = combCntTbl)
+    dge <- calcNormFactors(dge)
+    design <- model.matrix(~condition + dataType + RiboDiff)
+    v <- voom(dge, design, plot = FALSE)
+    fit <- lmFit(v, design)
+    fit <- eBayes(fit)
+    topGenes <- topTable(fit, coef = ncol(design), number = Inf)
   }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
