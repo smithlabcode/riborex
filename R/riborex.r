@@ -29,8 +29,8 @@ DESeq2Rex <- function (rnaCntTable, riboCntTable, rnaCondition, riboCondition)
     ##                control Ribo samples, case Ribo samples
     condition <- factor(c(rep(0, numCtlRNASmps), rep(1, numCaseRNASmps),
                           rep(0, numCtlRiboSmps), rep(1, numCaseRiboSmps)))
-    dataType <- factor(c(rep(0, ncol(RNACntTable)), rep(1, ncol(RiboCntTable))))
-    RiboDiff <- factor(c(rep(0, ncol(RNACntTable) + numCtlRiboSmps),
+    dataType <- factor(c(rep(0, ncol(rnaCntTable)), rep(1, ncol(riboCntTable))))
+    RiboDiff <- factor(c(rep(0, ncol(rnaCntTable) + numCtlRiboSmps),
                          rep(1, numCaseRiboSmps)))
 
     ## combine design matrix
@@ -58,12 +58,12 @@ edgeRRex <- function (rnaCntTable, riboCntTable, rnaCondition, riboCondition)
     ##                control Ribo samples, case Ribo samples
     condition <- factor(c(rep(0, numCtlRNASmps), rep(1, numCaseRNASmps),
                           rep(0, numCtlRiboSmps), rep(1, numCaseRiboSmps)))
-    dataType <- factor(c(rep(0, ncol(RNACntTable)), rep(1, ncol(RiboCntTable))))
-    RiboDiff <- factor(c(rep(0, ncol(RNACntTable) + numCtlRiboSmps),
+    dataType <- factor(c(rep(0, ncol(rnaCntTable)), rep(1, ncol(riboCntTable))))
+    RiboDiff <- factor(c(rep(0, ncol(rnaCntTable) + numCtlRiboSmps),
                          rep(1, numCaseRiboSmps)))
 
     ## combine counts
-    combCntTbl <- cbind(RNACntTable, RiboCntTable)
+    combCntTbl <- cbind(rnaCntTable, riboCntTable)
 
     dge <- DGEList(counts = combCntTbl)
     dge <- calcNormFactors(dge)
@@ -79,19 +79,14 @@ edgeRRex <- function (rnaCntTable, riboCntTable, rnaCondition, riboCondition)
 voomRex <- function (rnaCntTable, riboCntTable, rnaCondition, riboCondition)
 {
     library(edgeR)
-    ## read in RNA Count Table
-    RNACntTable <- read.table(RNACntFile, row.names = 1, header = TRUE)
 
-    numCaseRNASmps <- ncol(RNACntTable) - numCtlRNASmps
+    numCaseRNASmps <- ncol(rnaCntTable) - numCtlRNASmps
 
     group1 <- factor(c(rep(1,numCtlRNASmps), rep(2,numCaseRNASmps)))
 
     design1 <- model.matrix(~group1)
 
-    ## read in Ribo Count Table
-    RiboCntTable <- read.table(RiboCntFile, row.names = 1, header = TRUE)
-
-    numCaseRiboSmps <- ncol(RiboCntTable) - numCtlRiboSmps
+    numCaseRiboSmps <- ncol(riboCntTable) - numCtlRiboSmps
 
     group2 <- factor(c(rep(1,numCtlRiboSmps), rep(2,numCaseRiboSmps)))
 
