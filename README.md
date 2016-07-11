@@ -1,7 +1,7 @@
 Riborex
 =======
 
-Riborex is a R packagefor processing and interpreting Ribosome Profiling data.
+Riborex is a R package for processing and interpreting Ribosome Profiling data.
 
 REQUIREMENTS
 ------------
