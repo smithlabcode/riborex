@@ -36,7 +36,7 @@ Copyright and License Information
 Copyright (C) 2014 University of Southern California, Wenzheng Li, Weili Wang
 and Andrew D. Smith
 
-Authors: Jie Ren, Emad Bahrami Samani, Philip J. Uren, Andrew D. Smith
+Authors: Wenzheng Li, Weili Wang, Philip J. Uren, Luiz OF Penalva, Andrew D. Smith
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
