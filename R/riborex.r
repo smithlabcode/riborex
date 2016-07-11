@@ -119,15 +119,15 @@ voomRex <- function (rnaCntTable, riboCntTable, rnaCondition, riboCondition)
     topGenes <- topTable(fit, coef=ncol(design), number=Inf)
 }
 
-riborex <- function (rnaCntTable, riboCntTable, rnaCondition, riboCondition, method)
+riborex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond, engine)
 {
-    if (method == "DESeq2") {
-        DESeq2Rex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
+    if (engine == "DESeq2") {
+        DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond)
     }
-    else if (method == "edgeR") {
-        edgeRRex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
+    else if (engine == "edgeR") {
+        edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
     }
-    else if (method == "voom") {
-        voomRex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
+    else if (engine == "Voom") {
+        voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
     }
 }
