@@ -116,6 +116,9 @@ voomRex <- function (rnaCntTable, riboCntTable, rnaCondition, riboCondition)
 
 riborex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond, engine)
 {
+    if(missing(engine)) {
+      message("No engine selected, DESeq2 will be used by default")
+    }
     if (engine == "DESeq2") {
         DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond)
     }
