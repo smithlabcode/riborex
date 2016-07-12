@@ -31,34 +31,37 @@ modifyDesignMatrix <- function (rnaCond, riboCond)
     riboCond <- cbind(riboCond, riboCond)
     ### combine rna and ribo design matrix
     combinedCond <- rbind(rnaCond, riboCond)
-    modifiedDesignMatrix <- 
+    formula(combinedCond)
 }
 
 DESeq2Rex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond)
 {
-    library(DESeq2)
-
     ## combine counts
     combCntTbl <- cbind(rnaCntTable, riboCntTable)
 
-    ## combine design matrix
-    ## order of data: control RNA samples, case RNA samples,
-    ##                control Ribo samples, case Ribo samples
-    condition <- factor(c(rep(0, numCtlRNASmps), rep(1, numCaseRNASmps),
-                          rep(0, numCtlRiboSmps), rep(1, numCaseRiboSmps)))
-    dataType <- factor(c(rep(0, ncol(rnaCntTable)), rep(1, ncol(riboCntTable))))
-    RiboDiff <- factor(c(rep(0, ncol(rnaCntTable) + numCtlRiboSmps),
-                         rep(1, numCaseRiboSmps)))
+    if (ncol(rnaCond) != ncol(riboCond))
+        stop("rna-seq and ribo-seq must have the same number of conditions")
 
-    ## combine design matrix
-    combColData <- data.frame(condition = condition)
-    combColData$dataType <- dataType
-    combColData$RiboDiff <- RiboDiff
-    rownames(combColData) <- colnames(combCntTbl)
-
+    ### rnaCond <- cbind(intercept=factor(1), rnaCond)
+    ### riboCond <- cbind(intercept=factor(1), riboCond)
+    numCond <- ncol(rnaCond)
+    numRNASmps <- nrow(rnaCond)
+    numRiboSmps <- nrow(riboCond)
+    ### expand rna covariate vector with 0s
+    rnaExpansion <- matrix(factor(rep(rep(0,numCond), numRNASmps)), nrow=numRNASmps)
+    rnaCond <- cbind(rnaCond, as.data.frame(rnaExpansion))
+    numExtendedCols <- length(colnames(rnaCond))
+    colnames(rnaCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond))
+    ### expand ribo covariate vector by repeating the same vector
+    riboCond <- cbind(riboCond, riboCond)
+    colnames(riboCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond))
+    ### combine rna and ribo design matrix
+    combinedCond <- rbind(rnaCond, riboCond)
+    extendedConds <- colnames(combinedCond)
+    fmla <- as.formula(paste("~", paste(extendedConds, collapse= "+")))
     dds <- DESeqDataSetFromMatrix(countData = combCntTbl,
-                                  colData = combColData,
-                                  design = ~condition + dataType + RiboDiff)
+                                  colData = combinedCond,
+                                  design = fmla)
 
     ## apply new design matrix with combine count table to DESeq2
     dds <- DESeq(dds)
