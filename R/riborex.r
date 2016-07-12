@@ -23,7 +23,7 @@ combineDesignMatrix <- function (rnaCond, riboCond) {
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
   if (ncol(rnaCond) != ncol(riboCond))
-      stop("rna-seq and ribo-seq must have the same number of conditions")
+      stop("rna- and ribo-seq data must have the same number of conditions")
 
   numCond <- ncol(rnaCond)
   numRNASmps <- nrow(rnaCond)
@@ -63,7 +63,7 @@ DESeq2Rex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond) {
   combCntTbl <- cbind(rnaCntTable, riboCntTable)
 
   if (ncol(rnaCond) != ncol(riboCond))
-      stop("rna-seq and ribo-seq must have the same number of conditions")
+      stop("rna- and ribo-seq data must have the same number of conditions")
 
   numCond <- ncol(rnaCond)
   numRNASmps <- nrow(rnaCond)
@@ -162,16 +162,26 @@ voomRex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond) {
 
 riborex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond, engine) {
 
+  ## input validation
+  if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
+    stop ("rna- and ribo-seq data must have the same set of genes")
+
+  if (ncol(rnaCond) != ncol(riboCond))
+    stop("rna- and ribo-seq data must have the same number of conditions")
+
   if (engine == "DESeq2") {
-      DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+    DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond)
   }
   else if (engine == "edgeR") {
-      edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+    edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
   }
   else if (engine == "edgeRD") {
-      edgeRDRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+    edgeRDRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
   }
   else if (engine == "Voom") {
-      voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+    voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+  }
+  else {
+    stop ("error: unrecognized engine name")
   }
 }
