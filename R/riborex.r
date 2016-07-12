@@ -17,117 +17,161 @@
 # along with this software. If not, see
 # <http://www.gnu.org/licenses/>.
 
-combineDesignMatrix <- function (rnaCond, riboCond)
-{
-    if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
-    if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
+combineDesignMatrix <- function (rnaCond, riboCond) {
 
-    if (ncol(rnaCond) != ncol(riboCond))
-        stop("rna-seq and ribo-seq must have the same number of conditions")
+  if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
+  if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
-    numCond <- ncol(rnaCond)
-    numRNASmps <- nrow(rnaCond)
-    numRiboSmps <- nrow(riboCond)
+  if (ncol(rnaCond) != ncol(riboCond))
+      stop("rna-seq and ribo-seq must have the same number of conditions")
 
-    ### expand rna covariate vector with 0s
-    rnaExpansion <- matrix(factor(rep(rep(0,numCond+1), numRNASmps)), nrow=numRNASmps)
-    rnaCond <- cbind(rnaCond, as.data.frame(rnaExpansion))
-    numExtendedCols <- length(colnames(rnaCond))
-    colnames(rnaCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond+1))
+  numCond <- ncol(rnaCond)
+  numRNASmps <- nrow(rnaCond)
+  numRiboSmps <- nrow(riboCond)
 
-    ### expand ribo covariate vector by repeating the same vector
-    riboCond <- cbind(riboCond, intercept=factor(1), riboCond)
-    colnames(riboCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond+1))
+  ### expand rna covariate vector with 0s
+  rnaExpansion <- matrix(factor(rep(rep(0,numCond+1), numRNASmps)), nrow=numRNASmps)
+  rnaCond <- cbind(rnaCond, as.data.frame(rnaExpansion))
+  numExtendedCols <- length(colnames(rnaCond))
+  colnames(rnaCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond+1))
 
-    ### combine rna and ribo design matrix
-    combinedCond <- rbind(rnaCond, riboCond)
+  ### expand ribo covariate vector by repeating the same vector
+  riboCond <- cbind(riboCond, intercept=factor(1), riboCond)
+  colnames(riboCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond+1))
 
-    extendedConds <- paste0("combinedCond$", colnames(combinedCond))
-    fmla <- as.formula(paste("~", paste(extendedConds, collapse= "+")))
-    model.matrix(fmla)
+  ### combine rna and ribo design matrix
+  combinedCond <- rbind(rnaCond, riboCond)
+
+  extendedConds <- paste0("combinedCond$", colnames(combinedCond))
+  fmla <- as.formula(paste("~", paste(extendedConds, collapse= "+")))
+  model.matrix(fmla)
 }
 
-DESeq2Rex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond)
-{
-
-    if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
-    if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
-
-    ### combine counts
-    combCntTbl <- cbind(rnaCntTable, riboCntTable)
-
-    if (ncol(rnaCond) != ncol(riboCond))
-        stop("rna-seq and ribo-seq must have the same number of conditions")
-
-    numCond <- ncol(rnaCond)
-    numRNASmps <- nrow(rnaCond)
-    numRiboSmps <- nrow(riboCond)
-
-    ### expand rna covariate vector with 0s
-    rnaExpansion <- matrix(factor(rep(rep(0,numCond+1), numRNASmps)), nrow=numRNASmps)
-    rnaCond <- cbind(rnaCond, as.data.frame(rnaExpansion))
-    numExtendedCols <- length(colnames(rnaCond))
-    colnames(rnaCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond+1))
-
-    ### expand ribo covariate vector by repeating the same vector
-    riboCond <- cbind(riboCond, intercept=factor(1), riboCond)
-    colnames(riboCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond+1))
-    ### combine rna and ribo design matrix
-    combinedCond <- rbind(rnaCond, riboCond)
-    extendedConds <- colnames(combinedCond)
-    fmla <- as.formula(paste("~", paste(extendedConds, collapse= "+")))
-    dds <- DESeqDataSetFromMatrix(countData = combCntTbl,
-                                  colData = combinedCond,
-                                  design = fmla)
-
-    ## apply new design matrix with combined count table to DESeq2
-    dds <- DESeq(dds)
-    res <- results(dds)
-    res
+dataFrameToDesignMatrix <- function (cond) {
+  if (!is.data.frame(cond)) cond <- data.frame(cond = cond)
+  conditions <- paste0("cond$", colnames(cond))
+  fmla <- as.formula(paste("~", paste(conditions, collapse= "+")))
+  model.matrix(fmla)
 }
 
-edgeRRex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond)
-{
-    ## combine counts
-    combCntTbl <- cbind(rnaCntTable, riboCntTable)
+DESeq2Rex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond) {
 
-    dge <- DGEList(counts = combCntTbl)
-    dge <- calcNormFactors(dge)
-    design <- combineDesignMatrix(rnaCond, riboCond)
-    dge <- estimateDisp(dge, design)
+  if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
+  if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
-    ## glmFit and glmLRT
-    fit <- glmFit(dge, design)
-    lrt <- glmLRT(fit)
-    topGenes <- topTags(lrt, n=Inf)
-    topGenes
+  ### combine counts
+  combCntTbl <- cbind(rnaCntTable, riboCntTable)
+
+  if (ncol(rnaCond) != ncol(riboCond))
+      stop("rna-seq and ribo-seq must have the same number of conditions")
+
+  numCond <- ncol(rnaCond)
+  numRNASmps <- nrow(rnaCond)
+  numRiboSmps <- nrow(riboCond)
+
+  ### expand rna covariate vector with 0s
+  rnaExpansion <- matrix(factor(rep(rep(0,numCond+1), numRNASmps)), nrow=numRNASmps)
+  rnaCond <- cbind(rnaCond, as.data.frame(rnaExpansion))
+  numExtendedCols <- length(colnames(rnaCond))
+  colnames(rnaCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond+1))
+
+  ### expand ribo covariate vector by repeating the same vector
+  riboCond <- cbind(riboCond, intercept=factor(1), riboCond)
+  colnames(riboCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond+1))
+  ### combine rna and ribo design matrix
+  combinedCond <- rbind(rnaCond, riboCond)
+  extendedConds <- colnames(combinedCond)
+  fmla <- as.formula(paste("~", paste(extendedConds, collapse= "+")))
+  dds <- DESeqDataSetFromMatrix(countData = combCntTbl,
+                                colData = combinedCond,
+                                design = fmla)
+
+  ## apply new design matrix with combined count table to DESeq2
+  dds <- DESeq(dds)
+  res <- results(dds)
+  res
 }
 
-voomRex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond)
-{
-    ## combine counts
-    combCntTbl <- cbind(rnaCntTable, riboCntTable)
+edgeRRex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond) {
 
-    dge <- DGEList(counts = combCntTbl)
-    dge <- calcNormFactors(dge)
-    design <- combineDesignMatrix(rnaCond, riboCond)
-    v <- voom(dge, design, plot=FALSE)
-    fit <- lmFit(v, design)
-    fit <- eBayes(fit)
+  ## combine counts
+  combCntTbl <- cbind(rnaCntTable, riboCntTable)
 
-    topGenes <- topTable(fit, coef=ncol(design), number=Inf)
-    topGenes
+  dge <- DGEList(counts = combCntTbl)
+  dge <- calcNormFactors(dge)
+  design <- combineDesignMatrix(rnaCond, riboCond)
+  dge <- estimateDisp(dge, design)
+
+  ## glmFit and glmLRT
+  fit <- glmFit(dge, design)
+  lrt <- glmLRT(fit)
+  topGenes <- topTags(lrt, n=Inf)
+  topGenes
 }
 
-riborex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond, engine)
-{
-    if (engine == "DESeq2") {
-        DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond)
-    }
-    else if (engine == "edgeR") {
-        edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
-    }
-    else if (engine == "Voom") {
-        voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
-    }
+edgeRDRex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond) {
+
+  ## estimate dispersion from RNA-seq data
+  dge.rna <- DGEList(counts = rnaCntTable)
+  dge.rna <- calcNormFactors(dge.rna)
+  design.rna <- dataFrameToDesignMatrix(rnaCond)
+  dge.rna <- estimateDisp(dge.rna, design.rna)
+
+  ## estimate dispersion from Ribo-seq data
+  dge.ribo <- DGEList(counts = riboCntTable)
+  dge.ribo <- calcNormFactors(dge.ribo)
+  design.ribo <- dataFrameToDesignMatrix(riboCond)
+  dge.ribo <- estimateDisp(dge.ribo, design.ribo)
+
+  ## combine dispersions
+  dispersion.rna <- getDispersion(dge.rna)
+  dispersion.ribo <- getDispersion(dge.ribo)
+  dispersion <- matrix(c(rep(dispersion.rna, ncol(rnaCntTable)),
+                         rep(dispersion.ribo, ncol(riboCntTable))),
+                         nrow=dim(rnaCntTable)[1])
+  ## combine counts
+  combCntTbl <- cbind(rnaCntTable, riboCntTable)
+  ## combine size factors
+  combFactors <- c(dge.rna$samples$norm.factors, dge.ribo$samples$norm.factors)
+  ## create new DGE based on combined count table
+  dge <- DGEList(counts = combCntTbl, norm.factors = combFactors)
+  ## combine design matrix
+  design <- combineDesignMatrix(rnaCond, riboCond)
+  ## glmFit and glmLRT
+  fit <- glmFit(dge, design=design, dispersion=dispersion)
+  lrt <- glmLRT(fit)
+  topGenes <- topTags(lrt, n=Inf)
+  topGenes
+}
+
+voomRex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond) {
+
+  ## combine counts
+  combCntTbl <- cbind(rnaCntTable, riboCntTable)
+
+  dge <- DGEList(counts = combCntTbl)
+  dge <- calcNormFactors(dge)
+  design <- combineDesignMatrix(rnaCond, riboCond)
+  v <- voom(dge, design, plot=FALSE)
+  fit <- lmFit(v, design)
+  fit <- eBayes(fit)
+
+  topGenes <- topTable(fit, coef=ncol(design), number=Inf)
+  topGenes
+}
+
+riborex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond, engine) {
+
+  if (engine == "DESeq2") {
+      DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+  }
+  else if (engine == "edgeR") {
+      edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+  }
+  else if (engine == "edgeRD") {
+      edgeRDRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+  }
+  else if (engine == "Voom") {
+      voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+  }
 }
