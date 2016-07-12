@@ -17,7 +17,24 @@
 # along with this software. If not, see
 # <http://www.gnu.org/licenses/>.
 
-DESeq2Rex <- function (rnaCntTable, riboCntTable, rnaCondition, riboCondition)
+modifyDesignMatrix <- function (rnaCond, riboCond)
+{
+    if (ncol(rnaCond) != ncol(riboCond))
+        stop("rna-seq and ribo-seq must have the same number of conditions")
+    numCond <- ncol(rnaCond)
+    numRNASmps <- nrow(rnaCond)
+    numRiboSmps <- nrow(riboCond)
+    ### expand rna covariate vector with 0s
+    rnaExpansion <- matrix(rep(rep(0,numCond), numRNASmps), nrow=numRNASmps)
+    rnaCond <- cbind(rnaCond, as.data.frame(rnaExpansion))
+    ### expand ribo covariate vector by repeating the same vector
+    riboCond <- cbind(riboCond, riboCond)
+    ### combine rna and ribo design matrix
+    combinedCond <- rbind(rnaCond, riboCond)
+    modifiedDesignMatrix <- 
+}
+
+DESeq2Rex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond)
 {
     library(DESeq2)
 
@@ -49,7 +66,7 @@ DESeq2Rex <- function (rnaCntTable, riboCntTable, rnaCondition, riboCondition)
     res
 }
 
-edgeRRex <- function (rnaCntTable, riboCntTable, rnaCondition, riboCondition)
+edgeRRex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond)
 {
     library(edgeR)
 
@@ -76,7 +93,7 @@ edgeRRex <- function (rnaCntTable, riboCntTable, rnaCondition, riboCondition)
     topGenes <- topTags(lrt, n=Inf)
 }
 
-voomRex <- function (rnaCntTable, riboCntTable, rnaCondition, riboCondition)
+voomRex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond)
 {
     library(edgeR)
 
