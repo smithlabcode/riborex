@@ -17,33 +17,18 @@
 # along with this software. If not, see
 # <http://www.gnu.org/licenses/>.
 
-modifyDesignMatrix <- function (rnaCond, riboCond)
-{
-    if (ncol(rnaCond) != ncol(riboCond))
-        stop("rna-seq and ribo-seq must have the same number of conditions")
-    numCond <- ncol(rnaCond)
-    numRNASmps <- nrow(rnaCond)
-    numRiboSmps <- nrow(riboCond)
-    ### expand rna covariate vector with 0s
-    rnaExpansion <- matrix(rep(rep(0,numCond), numRNASmps), nrow=numRNASmps)
-    rnaCond <- cbind(rnaCond, as.data.frame(rnaExpansion))
-    ### expand ribo covariate vector by repeating the same vector
-    riboCond <- cbind(riboCond, riboCond)
-    ### combine rna and ribo design matrix
-    combinedCond <- rbind(rnaCond, riboCond)
-    formula(combinedCond)
-}
-
 DESeq2Rex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond)
 {
-    ## combine counts
+
+    if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
+    if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
+
+    ### combine counts
     combCntTbl <- cbind(rnaCntTable, riboCntTable)
 
     if (ncol(rnaCond) != ncol(riboCond))
         stop("rna-seq and ribo-seq must have the same number of conditions")
 
-    ### rnaCond <- cbind(intercept=factor(1), rnaCond)
-    ### riboCond <- cbind(intercept=factor(1), riboCond)
     numCond <- ncol(rnaCond)
     numRNASmps <- nrow(rnaCond)
     numRiboSmps <- nrow(riboCond)
@@ -65,7 +50,7 @@ DESeq2Rex <- function (rnaCntTable, riboCntTable, rnaCond, riboCond)
                                   colData = combinedCond,
                                   design = fmla)
 
-    ## apply new design matrix with combine count table to DESeq2
+    ## apply new design matrix with combined count table to DESeq2
     dds <- DESeq(dds)
     res <- results(dds)
     res
