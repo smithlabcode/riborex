@@ -1,5 +1,5 @@
-\name{voomRex}
-\alias{voomRex}
+\name{combineDesignMatrix}
+\alias{combineDesignMatrix}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
@@ -8,27 +8,15 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, minMeanCount = 1)
+combineDesignMatrix(rnaCond, riboCond)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{rnaCntTable}{
-%%     ~~Describe \code{rnaCntTable} here~~
-}
-  \item{riboCntTable}{
-%%     ~~Describe \code{riboCntTable} here~~
-}
   \item{rnaCond}{
 %%     ~~Describe \code{rnaCond} here~~
 }
   \item{riboCond}{
 %%     ~~Describe \code{riboCond} here~~
-}
-  \item{contrast}{
-%%     ~~Describe \code{contrast} here~~
-}
-  \item{minMeanCount}{
-%%     ~~Describe \code{minMeanCount} here~~
 }
 }
 \details{
@@ -62,34 +50,30 @@ voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, minMeanCo
 ##--	or do  help(data=index)  for the standard data sets.
 
 ## The function is currently defined as
-function (rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, 
-    minMeanCount = 1) 
+function (rnaCond, riboCond) 
 {
-    if (!identical(rownames(rnaCntTable), rownames(riboCntTable))) 
-        stop("RNA- and Ribo-seq data must have the same set of genes")
-    if (ncol(rnaCond) != ncol(riboCond)) 
-        stop("RNA- and Ribo-seq data must have the same number of conditions")
     if (!is.data.frame(rnaCond)) 
         rnaCond <- data.frame(cond = rnaCond)
     if (!is.data.frame(riboCond)) 
         riboCond <- data.frame(cond = riboCond)
-    keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
-    keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
-    keep <- intersect(keep.rna, keep.ribo)
-    rnaCntTable <- rnaCntTable[keep, ]
-    riboCntTable <- riboCntTable[keep, ]
-    combCntTbl <- cbind(rnaCntTable, riboCntTable)
-    dge <- DGEList(counts = combCntTbl)
-    dge <- calcNormFactors(dge)
-    design <- combineDesignMatrix(rnaCond, riboCond)
-    v <- voom(dge, design, plot = FALSE)
-    fit <- lmFit(v, design)
-    if (!is.null(contrast)) {
-        fit <- contrasts.fit(fit, contrasts = contrast)
-    }
-    fit <- eBayes(fit)
-    topGenes <- topTable(fit, coef = ncol(design), number = Inf)
-    topGenes
+    if (ncol(rnaCond) != ncol(riboCond)) 
+        stop("rna- and ribo-seq data must have the same number of conditions")
+    numCond <- ncol(rnaCond)
+    numRNASmps <- nrow(rnaCond)
+    numRiboSmps <- nrow(riboCond)
+    rnaExpansion <- matrix(factor(rep(rep(0, numCond + 1), numRNASmps)), 
+        nrow = numRNASmps)
+    rnaCond <- cbind(rnaCond, as.data.frame(rnaExpansion))
+    numExtendedCols <- length(colnames(rnaCond))
+    colnames(rnaCond)[(numCond + 1):numExtendedCols] <- paste0("extra", 
+        seq(numCond + 1))
+    riboCond <- cbind(riboCond, intercept = factor(1), riboCond)
+    colnames(riboCond)[(numCond + 1):numExtendedCols] <- paste0("extra", 
+        seq(numCond + 1))
+    combinedCond <- rbind(rnaCond, riboCond)
+    extendedConds <- paste0("combinedCond$", colnames(combinedCond))
+    fmla <- as.formula(paste("~", paste(extendedConds, collapse = "+")))
+    model.matrix(fmla)
   }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

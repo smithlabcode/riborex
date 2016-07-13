@@ -8,7 +8,7 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, engine)
+riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, minMeanCount = 1, engine = "DESeq2")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,6 +23,12 @@ riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, engine)
 }
   \item{riboCond}{
 %%     ~~Describe \code{riboCond} here~~
+}
+  \item{contrast}{
+%%     ~~Describe \code{contrast} here~~
+}
+  \item{minMeanCount}{
+%%     ~~Describe \code{minMeanCount} here~~
 }
   \item{engine}{
 %%     ~~Describe \code{engine} here~~
@@ -59,16 +65,31 @@ riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, engine)
 ##--	or do  help(data=index)  for the standard data sets.
 
 ## The function is currently defined as
-function (rnaCntTable, riboCntTable, rnaCond, riboCond, engine) 
+function (rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, 
+    minMeanCount = 1, engine = "DESeq2") 
 {
+    if (!identical(rownames(rnaCntTable), rownames(riboCntTable))) 
+        stop("RNA- and Ribo-seq data must have the same set of genes")
+    if (ncol(rnaCond) != ncol(riboCond)) 
+        stop("RNA- and ribo-seq data must have the same number of conditions")
     if (engine == "DESeq2") {
-        DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+        DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond, 
+            contrast, minMeanCount)
     }
     else if (engine == "edgeR") {
-        edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+        edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond, 
+            contrast, minMeanCount)
+    }
+    else if (engine == "edgeRD") {
+        edgeRDRex(rnaCntTable, riboCntTable, rnaCond, riboCond, 
+            contrast, minMeanCount)
     }
     else if (engine == "Voom") {
-        voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+        voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond, 
+            contrast, minMeanCount)
+    }
+    else {
+        stop("Error: unrecognized engine name")
     }
   }
 }

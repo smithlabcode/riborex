@@ -8,7 +8,7 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-edgeRRex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
+edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, minMeanCount = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,11 +18,17 @@ edgeRRex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
   \item{riboCntTable}{
 %%     ~~Describe \code{riboCntTable} here~~
 }
-  \item{rnaCondition}{
-%%     ~~Describe \code{rnaCondition} here~~
+  \item{rnaCond}{
+%%     ~~Describe \code{rnaCond} here~~
 }
-  \item{riboCondition}{
-%%     ~~Describe \code{riboCondition} here~~
+  \item{riboCond}{
+%%     ~~Describe \code{riboCond} here~~
+}
+  \item{contrast}{
+%%     ~~Describe \code{contrast} here~~
+}
+  \item{minMeanCount}{
+%%     ~~Describe \code{minMeanCount} here~~
 }
 }
 \details{
@@ -56,22 +62,31 @@ edgeRRex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
 ##--	or do  help(data=index)  for the standard data sets.
 
 ## The function is currently defined as
-function (rnaCntTable, riboCntTable, rnaCondition, riboCondition) 
+function (rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, 
+    minMeanCount = 1) 
 {
-    library(edgeR)
-    condition <- factor(c(rep(0, numCtlRNASmps), rep(1, numCaseRNASmps), 
-        rep(0, numCtlRiboSmps), rep(1, numCaseRiboSmps)))
-    dataType <- factor(c(rep(0, ncol(RNACntTable)), rep(1, ncol(RiboCntTable))))
-    RiboDiff <- factor(c(rep(0, ncol(RNACntTable) + numCtlRiboSmps), 
-        rep(1, numCaseRiboSmps)))
-    combCntTbl <- cbind(RNACntTable, RiboCntTable)
+    if (!identical(rownames(rnaCntTable), rownames(riboCntTable))) 
+        stop("RNA- and Ribo-seq data must have the same set of genes")
+    if (ncol(rnaCond) != ncol(riboCond)) 
+        stop("RNA- and Ribo-seq data must have the same number of conditions")
+    if (!is.data.frame(rnaCond)) 
+        rnaCond <- data.frame(cond = rnaCond)
+    if (!is.data.frame(riboCond)) 
+        riboCond <- data.frame(cond = riboCond)
+    keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
+    keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
+    keep <- intersect(keep.rna, keep.ribo)
+    rnaCntTable <- rnaCntTable[keep, ]
+    riboCntTable <- riboCntTable[keep, ]
+    combCntTbl <- cbind(rnaCntTable, riboCntTable)
     dge <- DGEList(counts = combCntTbl)
     dge <- calcNormFactors(dge)
-    design <- model.matrix(~condition + dataType + RiboDiff)
+    design <- combineDesignMatrix(rnaCond, riboCond)
     dge <- estimateDisp(dge, design)
     fit <- glmFit(dge, design)
-    lrt <- glmLRT(fit)
+    lrt <- glmLRT(fit, contrast = contrast)
     topGenes <- topTags(lrt, n = Inf)
+    topGenes
   }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

@@ -8,7 +8,7 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-DESeq2Rex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
+DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, minMeanCount = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,11 +18,17 @@ DESeq2Rex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
   \item{riboCntTable}{
 %%     ~~Describe \code{riboCntTable} here~~
 }
-  \item{rnaCondition}{
-%%     ~~Describe \code{rnaCondition} here~~
+  \item{rnaCond}{
+%%     ~~Describe \code{rnaCond} here~~
 }
-  \item{riboCondition}{
-%%     ~~Describe \code{riboCondition} here~~
+  \item{riboCond}{
+%%     ~~Describe \code{riboCond} here~~
+}
+  \item{contrast}{
+%%     ~~Describe \code{contrast} here~~
+}
+  \item{minMeanCount}{
+%%     ~~Describe \code{minMeanCount} here~~
 }
 }
 \details{
@@ -56,23 +62,47 @@ DESeq2Rex(rnaCntTable, riboCntTable, rnaCondition, riboCondition)
 ##--	or do  help(data=index)  for the standard data sets.
 
 ## The function is currently defined as
-function (rnaCntTable, riboCntTable, rnaCondition, riboCondition) 
+function (rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, 
+    minMeanCount = 1) 
 {
-    library(DESeq2)
+    if (!identical(rownames(rnaCntTable), rownames(riboCntTable))) 
+        stop("rna- and ribo-seq data must have the same set of genes")
+    if (ncol(rnaCond) != ncol(riboCond)) 
+        stop("rna- and ribo-seq data must have the same number of conditions")
+    if (!is.data.frame(rnaCond)) 
+        rnaCond <- data.frame(cond = rnaCond)
+    if (!is.data.frame(riboCond)) 
+        riboCond <- data.frame(cond = riboCond)
+    keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
+    keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
+    keep <- intersect(keep.rna, keep.ribo)
+    rnaCntTable <- rnaCntTable[keep, ]
+    riboCntTable <- riboCntTable[keep, ]
+    numCond <- ncol(rnaCond)
+    numRNASmps <- nrow(rnaCond)
+    numRiboSmps <- nrow(riboCond)
     combCntTbl <- cbind(rnaCntTable, riboCntTable)
-    condition <- factor(c(rep(0, numCtlRNASmps), rep(1, numCaseRNASmps), 
-        rep(0, numCtlRiboSmps), rep(1, numCaseRiboSmps)))
-    dataType <- factor(c(rep(0, ncol(RNACntTable)), rep(1, ncol(RiboCntTable))))
-    RiboDiff <- factor(c(rep(0, ncol(RNACntTable) + numCtlRiboSmps), 
-        rep(1, numCaseRiboSmps)))
-    combColData <- data.frame(condition = condition)
-    combColData$dataType <- dataType
-    combColData$RiboDiff <- RiboDiff
-    rownames(combColData) <- colnames(combCntTbl)
-    dds <- DESeqDataSetFromMatrix(countData = combCntTbl, colData = combColData, 
-        design = ~condition + dataType + RiboDiff)
+    rnaExpansion <- matrix(factor(rep(rep(0, numCond + 1), numRNASmps)), 
+        nrow = numRNASmps)
+    rnaCond <- cbind(rnaCond, as.data.frame(rnaExpansion))
+    numExtendedCols <- length(colnames(rnaCond))
+    colnames(rnaCond)[(numCond + 1):numExtendedCols] <- paste0("extra", 
+        seq(numCond + 1))
+    riboCond <- cbind(riboCond, intercept = factor(1), riboCond)
+    colnames(riboCond)[(numCond + 1):numExtendedCols] <- paste0("extra", 
+        seq(numCond + 1))
+    combinedCond <- rbind(rnaCond, riboCond)
+    extendedConds <- colnames(combinedCond)
+    fmla <- as.formula(paste("~", paste(extendedConds, collapse = "+")))
+    dds <- DESeqDataSetFromMatrix(countData = combCntTbl, colData = combinedCond, 
+        design = fmla)
     dds <- DESeq(dds)
-    res <- results(dds)
+    if (is.null(contrast)) {
+        res <- results(dds)
+    }
+    else {
+        res <- results(dds, contrast = contrast)
+    }
     res
   }
 }

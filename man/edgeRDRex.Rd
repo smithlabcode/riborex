@@ -1,5 +1,5 @@
-\name{voomRex}
-\alias{voomRex}
+\name{edgeRDRex}
+\alias{edgeRDRex}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
@@ -8,7 +8,7 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, minMeanCount = 1)
+edgeRDRex(rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, minMeanCount = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -78,17 +78,25 @@ function (rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL,
     keep <- intersect(keep.rna, keep.ribo)
     rnaCntTable <- rnaCntTable[keep, ]
     riboCntTable <- riboCntTable[keep, ]
+    dge.rna <- DGEList(counts = rnaCntTable)
+    dge.rna <- calcNormFactors(dge.rna)
+    design.rna <- dataFrameToDesignMatrix(rnaCond)
+    dge.rna <- estimateDisp(dge.rna, design.rna)
+    dge.ribo <- DGEList(counts = riboCntTable)
+    dge.ribo <- calcNormFactors(dge.ribo)
+    design.ribo <- dataFrameToDesignMatrix(riboCond)
+    dge.ribo <- estimateDisp(dge.ribo, design.ribo)
+    dispersion.rna <- getDispersion(dge.rna)
+    dispersion.ribo <- getDispersion(dge.ribo)
+    dispersion <- matrix(c(rep(dispersion.rna, ncol(rnaCntTable)), 
+        rep(dispersion.ribo, ncol(riboCntTable))), nrow = dim(rnaCntTable)[1])
     combCntTbl <- cbind(rnaCntTable, riboCntTable)
-    dge <- DGEList(counts = combCntTbl)
-    dge <- calcNormFactors(dge)
+    combFactors <- c(dge.rna$samples$norm.factors, dge.ribo$samples$norm.factors)
+    dge <- DGEList(counts = combCntTbl, norm.factors = combFactors)
     design <- combineDesignMatrix(rnaCond, riboCond)
-    v <- voom(dge, design, plot = FALSE)
-    fit <- lmFit(v, design)
-    if (!is.null(contrast)) {
-        fit <- contrasts.fit(fit, contrasts = contrast)
-    }
-    fit <- eBayes(fit)
-    topGenes <- topTable(fit, coef = ncol(design), number = Inf)
+    fit <- glmFit(dge, design = design, dispersion = dispersion)
+    lrt <- glmLRT(fit, contrast = contrast)
+    topGenes <- topTags(lrt, n = Inf)
     topGenes
   }
 }
