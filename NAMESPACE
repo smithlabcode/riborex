@@ -1,1 +1,2 @@
-exportPattern("^[[:alpha:]]+")
+import(DESeq2)
+import(edgeR)
