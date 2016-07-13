@@ -104,7 +104,11 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   ## apply new design matrix with combined count table to DESeq2
   dds <- DESeq(dds)
-  res <- results(dds)
+  if(is.null(contrast)) {
+    res <- results(dds)
+  } else {
+    res <- results(dds, contrast=contrast)
+  }
   res
 }
 
@@ -138,7 +142,7 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   ## glmFit and glmLRT
   fit <- glmFit(dge, design)
-  lrt <- glmLRT(fit)
+  lrt <- glmLRT(fit, contrast=contrast)
   topGenes <- topTags(lrt, n=Inf)
   topGenes
 }
@@ -192,7 +196,7 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   design <- combineDesignMatrix(rnaCond, riboCond)
   ## glmFit and glmLRT
   fit <- glmFit(dge, design=design, dispersion=dispersion)
-  lrt <- glmLRT(fit)
+  lrt <- glmLRT(fit, contrast=contrast)
   topGenes <- topTags(lrt, n=Inf)
   topGenes
 }
@@ -225,6 +229,9 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   design <- combineDesignMatrix(rnaCond, riboCond)
   v <- voom(dge, design, plot=FALSE)
   fit <- lmFit(v, design)
+  if(!is.null(contrast)) {
+    fit <- contrasts.fit(fit, contrasts = contrast)
+  }
   fit <- eBayes(fit)
 
   topGenes <- topTable(fit, coef=ncol(design), number=Inf)
