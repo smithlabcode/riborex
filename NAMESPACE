@@ -1,2 +1,7 @@
 import(DESeq2)
 import(edgeR)
+export(riborex)
+export(DESeq2Rex)
+export(edgeRRex)
+export(edgeRDRex)
+export(voomRex)

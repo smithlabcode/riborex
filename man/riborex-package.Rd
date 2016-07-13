@@ -3,23 +3,36 @@
 \alias{riborex}
 \docType{package}
 \title{
-\packageTitle{riborex}
+    A R package for identification of differential translation from Ribo-seq data
 }
 \description{
-\packageDescription{riborex}
+\packageDescription{
+    Riborex provides functions to identify differentially translated genes
+    from Ribo-seq data. Riborex is built upon existing RNA-seq data analysis
+    tool. Currently, we implemented riborex based on DESeq2, edgeR and Voom.
+    For edgeR, a version in which dispersion of RNA- and Ribo-seq data
+    are estimated independently is also implemented.
+  }
 }
 \details{
 
 The DESCRIPTION file:
 \packageDESCRIPTION{riborex}
 \packageIndices{riborex}
-~~ An overview of how to use the package, including the most important ~~
-~~ functions ~~
+functions:
+
+riborex
+DESeq2Rex
+edgeRRex
+edgeRDRex
+voomRex
 }
 \author{
-\packageAuthor{riborex}
+\packageAuthor{
+  Wenzheng Li, Weili Wang and Andrew D. Smith
+}
 
-Maintainer: \packageMaintainer{riborex}
+Maintainer: \packageMaintainer{Wenzheng Li <wenzhenl@usc.edu>}
 }
 \references{
 ~~ Literature or other references for background information ~~
