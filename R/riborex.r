@@ -99,6 +99,16 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
 
 edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
 
+  ### input validation
+  if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
+    stop ("rna- and ribo-seq data must have the same set of genes")
+
+  if (ncol(rnaCond) != ncol(riboCond))
+    stop("rna- and ribo-seq data must have the same number of conditions")
+
+  if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
+  if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
+
   ## combine counts
   combCntTbl <- cbind(rnaCntTable, riboCntTable)
 
@@ -115,6 +125,16 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
 }
 
 edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
+
+  ### input validation
+  if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
+    stop ("rna- and ribo-seq data must have the same set of genes")
+
+  if (ncol(rnaCond) != ncol(riboCond))
+    stop("rna- and ribo-seq data must have the same number of conditions")
+
+  if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
+  if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
   ## estimate dispersion from RNA-seq data
   dge.rna <- DGEList(counts = rnaCntTable)
@@ -150,6 +170,16 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
 }
 
 voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
+
+  ### input validation
+  if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
+    stop ("rna- and ribo-seq data must have the same set of genes")
+
+  if (ncol(rnaCond) != ncol(riboCond))
+    stop("rna- and ribo-seq data must have the same number of conditions")
+
+  if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
+  if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
   ## combine counts
   combCntTbl <- cbind(rnaCntTable, riboCntTable)
