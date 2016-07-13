@@ -109,7 +109,7 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 }
 
 edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
-                     contrast, minMeanCount=1) {
+                     contrast=NULL, minMeanCount=1) {
 
   ### input validation
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
