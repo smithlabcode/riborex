@@ -232,7 +232,7 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 }
 
 riborex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
-                    contrast=NULL, engine="DESeq2") {
+                    contrast=NULL, minMeanCount=1, engine="DESeq2") {
 
   ## input validation
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
@@ -242,16 +242,20 @@ riborex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
     stop("RNA- and ribo-seq data must have the same number of conditions")
 
   if (engine == "DESeq2") {
-    DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+    DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond,
+              contrast, minMeanCount)
   }
   else if (engine == "edgeR") {
-    edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+    edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond,
+             contrast, minMeanCount)
   }
   else if (engine == "edgeRD") {
-    edgeRDRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+    edgeRDRex(rnaCntTable, riboCntTable, rnaCond, riboCond,
+              contrast, minMeanCount)
   }
   else if (engine == "Voom") {
-    voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
+    voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond,
+            contrast, minMeanCount)
   }
   else {
     stop ("Error: unrecognized engine name")
