@@ -1,9 +1,12 @@
 Package: riborex
 Type: Package
-Title: What the package does (short line)
+Title: Identification of differential translation from Ribo-seq data
 Version: 1.0
 Date: 2016-07-11
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: Wenzheng Li, Weili Wang and Andrew D. Smith
+Maintainer: Wenzheng Li <wenzhenl@usc.edu>
+Description: Fast and flexible identification of differentially translated genes from Ribo-seq data using existing RNA-seq analysis methods as engines
+License: GPL-3
+Imports:
+  DESeq2
+  edgeR
