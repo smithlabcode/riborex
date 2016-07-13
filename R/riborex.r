@@ -54,7 +54,8 @@ dataFrameToDesignMatrix <- function(cond) {
   model.matrix(fmla)
 }
 
-DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
+DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
+                      contrast=NULL, minMeanCount=1) {
 
   ### input validation
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
@@ -66,6 +67,13 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
   if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
+  ### filter out low read count
+  keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
+  keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
+  keep <- intersect(keep.rna, keep.ribo)
+  rnaCntTable <- rnaCntTable[keep,]
+  riboCntTable <- riboCntTable[keep,]
+
   numCond <- ncol(rnaCond)
   numRNASmps <- nrow(rnaCond)
   numRiboSmps <- nrow(riboCond)
@@ -74,14 +82,17 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
   combCntTbl <- cbind(rnaCntTable, riboCntTable)
 
   ### expand rna covariate vector with 0s
-  rnaExpansion <- matrix(factor(rep(rep(0,numCond+1), numRNASmps)), nrow=numRNASmps)
+  rnaExpansion <- matrix(factor(rep(rep(0,numCond+1), numRNASmps)),
+                         nrow=numRNASmps)
   rnaCond <- cbind(rnaCond, as.data.frame(rnaExpansion))
   numExtendedCols <- length(colnames(rnaCond))
-  colnames(rnaCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond+1))
+  colnames(rnaCond)[(numCond+1):numExtendedCols] <- paste0("extra",
+                                                           seq(numCond+1))
 
   ### expand ribo covariate vector by repeating the same vector
   riboCond <- cbind(riboCond, intercept=factor(1), riboCond)
-  colnames(riboCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond+1))
+  colnames(riboCond)[(numCond+1):numExtendedCols] <- paste0("extra",
+                                                            seq(numCond+1))
 
   ### combine rna and ribo design matrix
   combinedCond <- rbind(rnaCond, riboCond)
@@ -97,17 +108,25 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
   res
 }
 
-edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
+edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
+                     contrast, minMeanCount=1) {
 
   ### input validation
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
-    stop ("rna- and ribo-seq data must have the same set of genes")
+    stop ("RNA- and Ribo-seq data must have the same set of genes")
 
   if (ncol(rnaCond) != ncol(riboCond))
-    stop("rna- and ribo-seq data must have the same number of conditions")
+    stop("RNA- and Ribo-seq data must have the same number of conditions")
 
   if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
+
+  ### filter out low read count
+  keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
+  keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
+  keep <- intersect(keep.rna, keep.ribo)
+  rnaCntTable <- rnaCntTable[keep,]
+  riboCntTable <- riboCntTable[keep,]
 
   ## combine counts
   combCntTbl <- cbind(rnaCntTable, riboCntTable)
@@ -124,17 +143,25 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
   topGenes
 }
 
-edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
+edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
+                      contrast=NULL, minMeanCount=1) {
 
   ### input validation
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
-    stop ("rna- and ribo-seq data must have the same set of genes")
+    stop ("RNA- and Ribo-seq data must have the same set of genes")
 
   if (ncol(rnaCond) != ncol(riboCond))
-    stop("rna- and ribo-seq data must have the same number of conditions")
+    stop("RNA- and Ribo-seq data must have the same number of conditions")
 
   if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
+
+  ### filter out low read count
+  keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
+  keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
+  keep <- intersect(keep.rna, keep.ribo)
+  rnaCntTable <- rnaCntTable[keep,]
+  riboCntTable <- riboCntTable[keep,]
 
   ## estimate dispersion from RNA-seq data
   dge.rna <- DGEList(counts = rnaCntTable)
@@ -157,7 +184,8 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
   ## combine counts
   combCntTbl <- cbind(rnaCntTable, riboCntTable)
   ## combine size factors
-  combFactors <- c(dge.rna$samples$norm.factors, dge.ribo$samples$norm.factors)
+  combFactors <- c(dge.rna$samples$norm.factors,
+                   dge.ribo$samples$norm.factors)
   ## create new DGE based on combined count table
   dge <- DGEList(counts = combCntTbl, norm.factors = combFactors)
   ## combine design matrix
@@ -169,17 +197,25 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
   topGenes
 }
 
-voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
+voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
+                    contrast=NULL, minMeanCount=1) {
 
   ### input validation
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
-    stop ("rna- and ribo-seq data must have the same set of genes")
+    stop ("RNA- and Ribo-seq data must have the same set of genes")
 
   if (ncol(rnaCond) != ncol(riboCond))
-    stop("rna- and ribo-seq data must have the same number of conditions")
+    stop("RNA- and Ribo-seq data must have the same number of conditions")
 
   if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
+
+  ### filter out low read count
+  keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
+  keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
+  keep <- intersect(keep.rna, keep.ribo)
+  rnaCntTable <- rnaCntTable[keep,]
+  riboCntTable <- riboCntTable[keep,]
 
   ## combine counts
   combCntTbl <- cbind(rnaCntTable, riboCntTable)
@@ -196,14 +232,14 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond) {
 }
 
 riborex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
-                     contrast=NULL, engine="DESeq2") {
+                    contrast=NULL, engine="DESeq2") {
 
   ## input validation
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
-    stop ("rna- and ribo-seq data must have the same set of genes")
+    stop ("RNA- and Ribo-seq data must have the same set of genes")
 
   if (ncol(rnaCond) != ncol(riboCond))
-    stop("rna- and ribo-seq data must have the same number of conditions")
+    stop("RNA- and ribo-seq data must have the same number of conditions")
 
   if (engine == "DESeq2") {
     DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond)
@@ -218,6 +254,6 @@ riborex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
     voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond)
   }
   else {
-    stop ("error: unrecognized engine name")
+    stop ("Error: unrecognized engine name")
   }
 }
