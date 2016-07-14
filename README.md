@@ -3,7 +3,7 @@ Riborex
 
 Riborex is a R package for identification of differential translation from Ribosome Profiling data.
 
-REQUIREMENTS
+DEPENDENCIES
 ------------
 * DESeq2
 * edgeR
