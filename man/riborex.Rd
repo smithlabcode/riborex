@@ -2,10 +2,15 @@
 \alias{riborex}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+  Identifying differential translation from ribosome profiling data 
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+  This function identifies differentially translated genes by
+  co-analyzing both RNA- and Ribo-seq data. It uses existing
+  RNA-seq data analysis tools as its engines. Currently, the
+  engines include DESeq2, edgeR and Voom. With edgeR, you can
+  choose estimate dispersion of RNA- and Ribo-seq data separately
+  or together.
 }
 \usage{
 riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, minMeanCount = 1, engine = "DESeq2")
@@ -13,7 +18,7 @@ riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, minMeanCo
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{rnaCntTable}{
-%%     ~~Describe \code{rnaCntTable} here~~
+  A data.frame.
 }
   \item{riboCntTable}{
 %%     ~~Describe \code{riboCntTable} here~~
