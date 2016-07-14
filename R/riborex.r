@@ -61,12 +61,12 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
     stop ("rna- and ribo-seq data must have the same set of genes")
 
-  if (ncol(rnaCond) != ncol(riboCond))
-    stop("rna- and ribo-seq data must have the same number of conditions")
-
   if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
+  if (ncol(rnaCond) != ncol(riboCond))
+    stop("rna- and ribo-seq data must have the same number of conditions")
+  
   ### filter out low read count
   keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
   keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
@@ -119,12 +119,12 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
     stop ("RNA- and Ribo-seq data must have the same set of genes")
 
-  if (ncol(rnaCond) != ncol(riboCond))
-    stop("RNA- and Ribo-seq data must have the same number of conditions")
-
   if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
+  if (ncol(rnaCond) != ncol(riboCond))
+    stop("RNA- and Ribo-seq data must have the same number of conditions")
+  
   ### filter out low read count
   keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
   keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
@@ -154,11 +154,11 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
     stop ("RNA- and Ribo-seq data must have the same set of genes")
 
-  if (ncol(rnaCond) != ncol(riboCond))
-    stop("RNA- and Ribo-seq data must have the same number of conditions")
-
   if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
+
+  if (ncol(rnaCond) != ncol(riboCond))
+    stop("RNA- and Ribo-seq data must have the same number of conditions")
 
   ### filter out low read count
   keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
@@ -208,11 +208,11 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
     stop ("RNA- and Ribo-seq data must have the same set of genes")
 
-  if (ncol(rnaCond) != ncol(riboCond))
-    stop("RNA- and Ribo-seq data must have the same number of conditions")
-
   if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
+
+  if (ncol(rnaCond) != ncol(riboCond))
+    stop("RNA- and Ribo-seq data must have the same number of conditions")
 
   ### filter out low read count
   keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
@@ -240,13 +240,6 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
 riborex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
                     contrast=NULL, minMeanCount=1, engine="DESeq2") {
-
-  ## input validation
-  if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
-    stop ("RNA- and Ribo-seq data must have the same set of genes")
-
-  if (ncol(rnaCond) != ncol(riboCond))
-    stop("RNA- and ribo-seq data must have the same number of conditions")
 
   if (engine == "DESeq2") {
     DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond,
