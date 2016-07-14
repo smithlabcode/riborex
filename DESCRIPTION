@@ -9,4 +9,4 @@ Description: Fast and flexible identification of differentially translated
              genes from Ribo-seq data using existing RNA-seq analysis
              methods as engines
 License: GPL-3
-Imports: DESeq2, edgeR
+Depends: DESeq2, edgeR
