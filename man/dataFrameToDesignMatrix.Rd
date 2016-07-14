@@ -2,7 +2,7 @@
 \alias{dataFrameToDesignMatrix}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+  Converting a data frame to a design matrix
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
