@@ -239,7 +239,7 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 }
 
 riborex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
-                    contrast=NULL, minMeanCount=1, engine="DESeq2") {
+                    engine="DESeq2", contrast=NULL, minMeanCount=1) {
 
   if (engine == "DESeq2") {
     DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond,
