@@ -39,7 +39,7 @@ combineDesignMatrix <- function(rnaCond, riboCond) {
                                                            seq(numCond+1))
 
   ### expand ribo covariate vector by repeating the same vector
-  riboCond <- cbind(riboCond, intercept=factor(1), riboCond)
+  riboCond <- cbind(riboCond, 1, riboCond)
   colnames(riboCond)[(numCond+1):ncol(riboCond)] <- paste0("EXTRA",
                                                             seq(numCond+1))
 
@@ -106,7 +106,7 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
                                                            seq(numCond+1))
 
   ### expand ribo covariate vector by repeating the same vector
-  riboCond <- cbind(riboCond, intercept=factor(1), riboCond)
+  riboCond <- cbind(riboCond, 1, riboCond)
   colnames(riboCond)[(numCond+1):ncol(riboCond)] <- paste0("EXTRA",
                                                             seq(numCond+1))
 
