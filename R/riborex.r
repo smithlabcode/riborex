@@ -19,6 +19,8 @@
 
 combineDesignMatrix <- function(rnaCond, riboCond) {
 
+  message("combining design matrix")
+
   if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
@@ -96,6 +98,8 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   ### combine counts
   combCntTbl <- cbind(rnaCntTable, riboCntTable)
 
+  message("combining design matrix")
+
   ### expand rna covariate vector with 0s
   expansion.rna <- matrix(rep(rnaCond[1,], nrow(rnaCond)),
                           nrow=nrow(rnaCond),
@@ -117,6 +121,8 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   dds <- DESeqDataSetFromMatrix(countData = combCntTbl,
                                 colData = combinedCond,
                                 design = fmla)
+
+  message("applying DESeq2 to modified design matrix")
 
   ## apply new design matrix with combined count table to DESeq2
   dds <- DESeq(dds)
@@ -166,6 +172,8 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   dge <- calcNormFactors(dge)
   design <- combineDesignMatrix(rnaCond, riboCond)
   dge <- estimateDisp(dge, design)
+
+  message("applying edgeR to modified design matrix")
 
   ## glmFit and glmLRT
   fit <- glmFit(dge, design)
@@ -232,6 +240,9 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   dge <- DGEList(counts = combCntTbl, norm.factors = combFactors)
   ## combine design matrix
   design <- combineDesignMatrix(rnaCond, riboCond)
+
+  message("applying edgeR to modified design matrix")
+
   ## glmFit and glmLRT
   fit <- glmFit(dge, design=design, dispersion=dispersion)
   lrt <- glmLRT(fit, contrast=contrast)
@@ -276,6 +287,9 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   dge <- DGEList(counts = combCntTbl)
   dge <- calcNormFactors(dge)
   design <- combineDesignMatrix(rnaCond, riboCond)
+
+  message("applying Voom to modified design matrix")
+
   v <- voom(dge, design, plot=FALSE)
   fit <- lmFit(v, design)
   if(!is.null(contrast)) {
@@ -291,18 +305,22 @@ riborex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
                     engine="DESeq2", contrast=NULL, minMeanCount=1) {
 
   if (engine == "DESeq2") {
+    message("DESeq2 mode selected")
     DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond,
               contrast, minMeanCount)
   }
   else if (engine == "edgeR") {
+    message("edgeR mode selected")
     edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond,
              contrast, minMeanCount)
   }
   else if (engine == "edgeRD") {
+    message("edgeRD mode selected")
     edgeRDRex(rnaCntTable, riboCntTable, rnaCond, riboCond,
               contrast, minMeanCount)
   }
   else if (engine == "Voom") {
+    message("Voom mode selected")
     voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond,
             contrast, minMeanCount)
   }
