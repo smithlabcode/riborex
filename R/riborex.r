@@ -30,14 +30,18 @@ combineDesignMatrix <- function(rnaCond, riboCond) {
   numRiboSmps <- nrow(riboCond)
 
   ### expand rna covariate vector with 0s
-  rnaExpansion <- matrix(factor(rep(rep(0,numCond+1), numRNASmps)), nrow=numRNASmps)
-  rnaCond <- cbind(rnaCond, as.data.frame(rnaExpansion))
-  numExtendedCols <- length(colnames(rnaCond))
-  colnames(rnaCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond+1))
+  expansion.rna <- matrix(rep(rnaCond[1,], nrow(rnaCond)),
+                          nrow=nrow(rnaCond),
+                          byrow=True)
+  expansion.rna <- as.data.frame(cbind(0, expansion.rna))
+  rnaCond <- cbind(rnaCond, expansion.rna)
+  colnames(rnaCond)[(numCond+1):(ncol(rnaCond))] <- paste0("extra",
+                                                           seq(numCond+1))
 
   ### expand ribo covariate vector by repeating the same vector
   riboCond <- cbind(riboCond, intercept=factor(1), riboCond)
-  colnames(riboCond)[(numCond+1):numExtendedCols] <- paste0("extra",seq(numCond+1))
+  colnames(riboCond)[(numCond+1):numExtendedCols] <- paste0("extra",
+                                                            seq(numCond+1))
 
   ### combine rna and ribo design matrix
   combinedCond <- rbind(rnaCond, riboCond)
@@ -93,11 +97,12 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   combCntTbl <- cbind(rnaCntTable, riboCntTable)
 
   ### expand rna covariate vector with 0s
-  rnaExpansion <- matrix(factor(rep(rep(0,numCond+1), numRNASmps)),
-                         nrow=numRNASmps)
-  rnaCond <- cbind(rnaCond, as.data.frame(rnaExpansion))
-  numExtendedCols <- length(colnames(rnaCond))
-  colnames(rnaCond)[(numCond+1):numExtendedCols] <- paste0("extra",
+  expansion.rna <- matrix(rep(rnaCond[1,], nrow(rnaCond)),
+                          nrow=nrow(rnaCond),
+                          byrow=True)
+  expansion.rna <- as.data.frame(cbind(0, expansion.rna))
+  rnaCond <- cbind(rnaCond, expansion.rna)
+  colnames(rnaCond)[(numCond+1):(ncol(rnaCond))] <- paste0("extra",
                                                            seq(numCond+1))
 
   ### expand ribo covariate vector by repeating the same vector
