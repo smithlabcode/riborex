@@ -22,8 +22,8 @@ combineDesignMatrix <- function(rnaCond, riboCond) {
   if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
-  if (ncol(rnaCond) != ncol(riboCond))
-      stop("rna- and ribo-seq data must have the same number of conditions")
+  if (!identical(colnames(rnaCond), colnames(riboCond)))
+      stop("rna- and ribo-seq data must have the same set of conditions")
 
   numCond <- ncol(rnaCond)
   numRNASmps <- nrow(rnaCond)
@@ -35,12 +35,12 @@ combineDesignMatrix <- function(rnaCond, riboCond) {
                           byrow=True)
   expansion.rna <- as.data.frame(cbind(0, expansion.rna))
   rnaCond <- cbind(rnaCond, expansion.rna)
-  colnames(rnaCond)[(numCond+1):(ncol(rnaCond))] <- paste0("extra",
+  colnames(rnaCond)[(numCond+1):ncol(rnaCond)] <- paste0("EXTRA",
                                                            seq(numCond+1))
 
   ### expand ribo covariate vector by repeating the same vector
   riboCond <- cbind(riboCond, intercept=factor(1), riboCond)
-  colnames(riboCond)[(numCond+1):numExtendedCols] <- paste0("extra",
+  colnames(riboCond)[(numCond+1):ncol(riboCond)] <- paste0("EXTRA",
                                                             seq(numCond+1))
 
   ### combine rna and ribo design matrix
@@ -68,8 +68,8 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   if (!is.data.frame(rnaCond)) rnaCond <- data.frame(cond = rnaCond)
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
-  if (ncol(rnaCond) != ncol(riboCond))
-    stop("rna- and ribo-seq data must have the same number of conditions")
+  if (!identical(colnames(rnaCond), colnames(riboCond)))
+      stop("rna- and ribo-seq data must have the same set of conditions")
 
   if (ncol(rnaCntTable) != nrow(rnaCond))
     stop(paste("RNA-seq count table must have the",
@@ -102,12 +102,12 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
                           byrow=True)
   expansion.rna <- as.data.frame(cbind(0, expansion.rna))
   rnaCond <- cbind(rnaCond, expansion.rna)
-  colnames(rnaCond)[(numCond+1):(ncol(rnaCond))] <- paste0("extra",
+  colnames(rnaCond)[(numCond+1):ncol(rnaCond)] <- paste0("EXTRA",
                                                            seq(numCond+1))
 
   ### expand ribo covariate vector by repeating the same vector
   riboCond <- cbind(riboCond, intercept=factor(1), riboCond)
-  colnames(riboCond)[(numCond+1):numExtendedCols] <- paste0("extra",
+  colnames(riboCond)[(numCond+1):ncol(riboCond)] <- paste0("EXTRA",
                                                             seq(numCond+1))
 
   ### combine rna and ribo design matrix
@@ -139,7 +139,7 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
   if (ncol(rnaCond) != ncol(riboCond))
-    stop("RNA- and Ribo-seq data must have the same number of conditions")
+    stop("rna- and ribo-seq data must have the same number of conditions")
 
   if (ncol(rnaCntTable) != nrow(rnaCond))
     stop(paste("RNA-seq count table must have the",
