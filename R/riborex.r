@@ -77,14 +77,14 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   if (ncol(riboCntTable) != nrow(riboCond))
     stop(paste("Ribo-seq count table must have the",
-               "same number of samples as in rnaCond"))
+               "same number of samples as in riboCond"))
 
   if (minMeanCount < 1)
-    stop("minMeanCount should at least be 1")
+    stop("minMeanCount must at least be 1")
 
   ### filter out low read count
-  keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
-  keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
+  keep.rna <- which(rowMeans(rnaCntTable) >= minMeanCount)
+  keep.ribo <- which(rowMeans(riboCntTable) >= minMeanCount)
   keep <- intersect(keep.rna, keep.ribo)
   rnaCntTable <- rnaCntTable[keep,]
   riboCntTable <- riboCntTable[keep,]
@@ -147,14 +147,14 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   if (ncol(riboCntTable) != nrow(riboCond))
     stop(paste("Ribo-seq count table must have the",
-               "same number of samples as in rnaCond"))
+               "same number of samples as in riboCond"))
 
   if (minMeanCount < 1)
-    stop("minMeanCount should at least be 1")
+    stop("minMeanCount must at least be 1")
 
   ### filter out low read count
-  keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
-  keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
+  keep.rna <- which(rowMeans(rnaCntTable) >= minMeanCount)
+  keep.ribo <- which(rowMeans(riboCntTable) >= minMeanCount)
   keep <- intersect(keep.rna, keep.ribo)
   rnaCntTable <- rnaCntTable[keep,]
   riboCntTable <- riboCntTable[keep,]
@@ -193,14 +193,14 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   if (ncol(riboCntTable) != nrow(riboCond))
     stop(paste("Ribo-seq count table must have the",
-               "same number of samples as in rnaCond"))
+               "same number of samples as in riboCond"))
 
   if (minMeanCount < 1)
-    stop("minMeanCount should at least be 1")
+    stop("minMeanCount must at least be 1")
 
   ### filter out low read count
-  keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
-  keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
+  keep.rna <- which(rowMeans(rnaCntTable) >= minMeanCount)
+  keep.ribo <- which(rowMeans(riboCntTable) >= minMeanCount)
   keep <- intersect(keep.rna, keep.ribo)
   rnaCntTable <- rnaCntTable[keep,]
   riboCntTable <- riboCntTable[keep,]
