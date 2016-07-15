@@ -80,9 +80,9 @@ riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, engine = "DESeq2", contras
   ### get ribo-seq read count table
   ribo <- riborexdata$ribo
   ### prepare rna-seq condtions
-  rnacond <- factor(c("control", "control", "treated", "treated"))
+  rnacond <- c("control", "control", "treated", "treated")
   ### prepare ribo-seq condtions
-  ribocond <- factor(c("control", "control", "treated", "treated"))
+  ribocond <- c("control", "control", "treated", "treated")
   ### run riborex with default engine "DESeq2"
   res.deseq2 <- riborex(rna, ribo, rnacond, ribocond)
   ### run riborex with engine "edgeR"
