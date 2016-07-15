@@ -66,7 +66,18 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   if (ncol(rnaCond) != ncol(riboCond))
     stop("rna- and ribo-seq data must have the same number of conditions")
-  
+
+  if (ncol(rnaCntTable) != nrow(rnaCond))
+    stop(paste("RNA-seq count table must have the",
+               "same number of samples as in rnaCond"))
+
+  if (ncol(riboCntTable) != nrow(riboCond))
+    stop(paste("Ribo-seq count table must have the",
+               "same number of samples as in rnaCond"))
+
+  if (minMeanCount < 1)
+    stop("minMeanCount should at least be 1")
+
   ### filter out low read count
   keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
   keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
@@ -124,7 +135,18 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   if (ncol(rnaCond) != ncol(riboCond))
     stop("RNA- and Ribo-seq data must have the same number of conditions")
-  
+
+  if (ncol(rnaCntTable) != nrow(rnaCond))
+    stop(paste("RNA-seq count table must have the",
+               "same number of samples as in rnaCond"))
+
+  if (ncol(riboCntTable) != nrow(riboCond))
+    stop(paste("Ribo-seq count table must have the",
+               "same number of samples as in rnaCond"))
+
+  if (minMeanCount < 1)
+    stop("minMeanCount should at least be 1")
+
   ### filter out low read count
   keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
   keep.ribo <- which(rowMeans(riboCntTable) > minMeanCount)
@@ -159,6 +181,17 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   if (ncol(rnaCond) != ncol(riboCond))
     stop("RNA- and Ribo-seq data must have the same number of conditions")
+
+  if (ncol(rnaCntTable) != nrow(rnaCond))
+    stop(paste("RNA-seq count table must have the",
+               "same number of samples as in rnaCond"))
+
+  if (ncol(riboCntTable) != nrow(riboCond))
+    stop(paste("Ribo-seq count table must have the",
+               "same number of samples as in rnaCond"))
+
+  if (minMeanCount < 1)
+    stop("minMeanCount should at least be 1")
 
   ### filter out low read count
   keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
@@ -213,6 +246,17 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   if (ncol(rnaCond) != ncol(riboCond))
     stop("RNA- and Ribo-seq data must have the same number of conditions")
+
+  if (ncol(rnaCntTable) != nrow(rnaCond))
+    stop(paste("RNA-seq count table must have the",
+               "same number of samples as in rnaCond"))
+
+  if (ncol(riboCntTable) != nrow(riboCond))
+    stop(paste("Ribo-seq count table must have the",
+               "same number of samples as in rnaCond"))
+
+  if (minMeanCount < 1)
+    stop("minMeanCount should at least be 1")
 
   ### filter out low read count
   keep.rna <- which(rowMeans(rnaCntTable) > minMeanCount)
