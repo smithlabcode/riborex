@@ -47,6 +47,7 @@ riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, engine = "DESeq2", contras
 }
 
   \item{contrast}{
+    a vector to specify the comparison to extract the results.
 }
   \item{minMeanCount}{
   The criterion for filtering low read count. The genes whose mean read
@@ -70,50 +71,24 @@ riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, engine = "DESeq2", contras
 \author{
   Wenzheng Li <wenzhenl@usc.edu>
 }
-\note{
-%%  ~~further notes~~
-}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, 
-    minMeanCount = 1, engine = "DESeq2") 
-{
-    if (!identical(rownames(rnaCntTable), rownames(riboCntTable))) 
-        stop("RNA- and Ribo-seq data must have the same set of genes")
-    if (ncol(rnaCond) != ncol(riboCond)) 
-        stop("RNA- and ribo-seq data must have the same number of conditions")
-    if (engine == "DESeq2") {
-        DESeq2Rex(rnaCntTable, riboCntTable, rnaCond, riboCond, 
-            contrast, minMeanCount)
-    }
-    else if (engine == "edgeR") {
-        edgeRRex(rnaCntTable, riboCntTable, rnaCond, riboCond, 
-            contrast, minMeanCount)
-    }
-    else if (engine == "edgeRD") {
-        edgeRDRex(rnaCntTable, riboCntTable, rnaCond, riboCond, 
-            contrast, minMeanCount)
-    }
-    else if (engine == "Voom") {
-        voomRex(rnaCntTable, riboCntTable, rnaCond, riboCond, 
-            contrast, minMeanCount)
-    }
-    else {
-        stop("Error: unrecognized engine name")
-    }
-  }
+  ### load the data
+  data(riborexdata)
+  ### get rna-seq read count table
+  rna <- riborexdata$rna
+  ### get ribo-seq read count table
+  ribo <- riborexdata$ribo
+  ### prepare rna-seq condtions
+  rnacond <- factor(c("control", "control", "treated", "treated"))
+  ### prepare ribo-seq condtions
+  ribocond <- factor(c("control", "control", "treated", "treated"))
+  ### run riborex with default engine "DESeq2"
+  res.deseq2 <- riborex(rna, ribo, rnacond, ribocond)
+  ### run riborex with engine "edgeR"
+  res.edgeR <- riborex(rna, ribo, rnacond, ribocond, "edgeR")
+  ### run riborex with engine "edgeRD"
+  res.edgeRD <- riborex(rna, ribo, rnacond, ribocond, "edgeRD")
+  ### run riborex with engine "Voom"
+  res.Voom <- riborex(rna, ribo, rnacond, ribocond, "Voom")
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
