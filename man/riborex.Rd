@@ -8,12 +8,13 @@
   This function identifies differentially translated genes by
   co-analyzing both RNA- and Ribo-seq data. It uses existing
   RNA-seq data analysis tools as its engines. Currently, the
-  engines include DESeq2, edgeR and Voom. With edgeR, you can
-  choose to estimate dispersion of RNA- and Ribo-seq data
-  separately or together.
+  engines include DESeq2, edgeR, edgeRD and Voom.
+  Among them, DESeq2, edgeR and Voom estimate dispersion across
+  all RNA- and Ribo-seq samples, while edgeRD estimates dispersion
+  for RNA- and Ribo-seq data separately.
 }
 \usage{
-riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, minMeanCount = 1, engine = "DESeq2")
+riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, engine = "DESeq2", contrast = NULL, minMeanCount = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -28,27 +29,29 @@ riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, contrast = NULL, minMeanCo
 }
   \item{rnaCond}{
   a vector for single factor experiment or a data frame for multi-factor
-  experiment. The order of samples should be the same as in rnaCntTable.
+  experiment to label the treatment applied on samples. The order of
+  samples should be the same as that in rnaCntTable.
 }
   \item{riboCond}{
   a vector for single factor experiment or a data frame for multi-factor
-  experiment. The order of samples should be the same as in riboCntTable.
+  experiment to label the treatment applied on samples. The order of
+  samples should be the same as that in riboCntTable.
   The set of factors and the order of them should be the same as rnaCond.
 }
+  \item{engine}{
+  A string to specify the name of engine to be used. You can choose
+  "DESeq2", "edgeR", "edgeRD" or "Voom". Among them, DESeq2, edgeR
+  and Voom estimate dispersion across
+  all RNA- and Ribo-seq samples, while edgeRD estimates dispersion
+  for RNA- and Ribo-seq data separately.
+}
+
   \item{contrast}{
-  a vector to specify which contrast to be applied on.
 }
   \item{minMeanCount}{
   The criterion for filtering low read count. The genes whose mean read
   count across all RNA- and Ribo-seq samples less than minMeanCount
   will be omitted.
-}
-  \item{engine}{
-  A string to specify the name of engine to be used. You can choose
-  "DESeq2", "edgeR", "edgeRD" or "Voom". The option "edgeR" will
-  estimate a single dispersion for both RNA- and Ribo-seq data, 
-  and "edgeRD" will estimate dispersion for RNA- and Ribo-seq
-  data separately.
 }
 }
 \details{
