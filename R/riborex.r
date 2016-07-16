@@ -131,6 +131,9 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   } else {
     res <- results(dds, contrast=contrast)
   }
+
+  ## order results by gene names
+  res <- res[order(rownames(res)),]
   res
 }
 
@@ -179,6 +182,9 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   fit <- glmFit(dge, design)
   lrt <- glmLRT(fit, contrast=contrast)
   topGenes <- topTags(lrt, n=Inf)
+
+  ## order results by gene names
+  topGenes <- topGenes[order(rownames(topGenes)),]
   topGenes
 }
 
@@ -247,6 +253,9 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   fit <- glmFit(dge, design=design, dispersion=dispersion)
   lrt <- glmLRT(fit, contrast=contrast)
   topGenes <- topTags(lrt, n=Inf)
+
+  ## order results by gene names
+  topGenes <- topGenes[order(rownames(topGenes)),]
   topGenes
 }
 
@@ -298,6 +307,9 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   fit <- eBayes(fit)
 
   topGenes <- topTable(fit, coef=ncol(design), number=Inf)
+
+  ## order results by gene names
+  topGenes <- topGenes[order(rownames(topGenes)),]
   topGenes
 }
 
