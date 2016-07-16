@@ -35,7 +35,7 @@ combineDesignMatrix <- function(rnaCond, riboCond) {
   expansion.rna <- matrix(rep(rnaCond[1,], nrow(rnaCond)),
                           nrow=nrow(rnaCond),
                           byrow=TRUE)
-  expansion.rna <- as.data.frame(cbind(0, expansion.rna))
+  expansion.rna <- cbind(0, as.data.frame(expansion.rna))
   rnaCond <- cbind(rnaCond, expansion.rna)
   colnames(rnaCond)[(numCond+1):ncol(rnaCond)] <- paste0("EXTRA",
                                                            seq(numCond+1))
@@ -104,7 +104,7 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   expansion.rna <- matrix(rep(rnaCond[1,], nrow(rnaCond)),
                           nrow=nrow(rnaCond),
                           byrow=TRUE)
-  expansion.rna <- as.data.frame(cbind(0, expansion.rna))
+  expansion.rna <- cbind(0, as.data.frame(expansion.rna))
   rnaCond <- cbind(rnaCond, expansion.rna)
   colnames(rnaCond)[(numCond+1):ncol(rnaCond)] <- paste0("EXTRA",
                                                            seq(numCond+1))
