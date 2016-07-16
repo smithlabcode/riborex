@@ -90,5 +90,5 @@ riborex(rnaCntTable, riboCntTable, rnaCond, riboCond, engine = "DESeq2", contras
   ### run riborex with engine "edgeRD"
   res.edgeRD <- riborex(rna, ribo, rnacond, ribocond, "edgeRD")
   ### run riborex with engine "Voom"
-  res.Voom <- riborex(rna, ribo, rnacond, ribocond, "Voom")
+  res.voom <- riborex(rna, ribo, rnacond, ribocond, "Voom")
 }
