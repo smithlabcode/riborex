@@ -32,9 +32,10 @@ combineDesignMatrix <- function(rnaCond, riboCond) {
   numRiboSmps <- nrow(riboCond)
 
   ### expand rna covariate vector with 0s
-  expansion.rna <- matrix(rep(rnaCond[1,], nrow(rnaCond)),
-                          nrow=nrow(rnaCond),
-                          byrow=TRUE)
+  expansion.rna <- rnaCond
+  for(i in 1:ncol(expansion.rna)) {
+    expansion.rna[,i] <- rnaCond[1,i]
+  }
   expansion.rna <- cbind(0, as.data.frame(expansion.rna))
   rnaCond <- cbind(rnaCond, expansion.rna)
   colnames(rnaCond)[(numCond+1):ncol(rnaCond)] <- paste0("EXTRA",
@@ -101,9 +102,10 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   message("combining design matrix")
 
   ### expand rna covariate vector with 0s
-  expansion.rna <- matrix(rep(rnaCond[1,], nrow(rnaCond)),
-                          nrow=nrow(rnaCond),
-                          byrow=TRUE)
+  expansion.rna <- rnaCond
+  for(i in 1:ncol(expansion.rna)) {
+    expansion.rna[,i] <- rnaCond[1,i]
+  }
   expansion.rna <- as.data.frame(cbind(0, expansion.rna))
   rnaCond <- cbind(rnaCond, expansion.rna)
   colnames(rnaCond)[(numCond+1):ncol(rnaCond)] <- paste0("EXTRA",
