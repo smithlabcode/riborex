@@ -104,13 +104,13 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   expansion.rna <- matrix(rep(rnaCond[1,], nrow(rnaCond)),
                           nrow=nrow(rnaCond),
                           byrow=TRUE)
-  expansion.rna <- cbind(0, as.data.frame(expansion.rna))
+  expansion.rna <- as.data.frame(cbind(0, expansion.rna))
   rnaCond <- cbind(rnaCond, expansion.rna)
   colnames(rnaCond)[(numCond+1):ncol(rnaCond)] <- paste0("EXTRA",
                                                            seq(numCond+1))
 
   ### expand ribo covariate vector by repeating the same vector
-  riboCond <- cbind(riboCond, 1, riboCond)
+  riboCond <- cbind(riboCond, factor(1), riboCond)
   colnames(riboCond)[(numCond+1):ncol(riboCond)] <- paste0("EXTRA",
                                                             seq(numCond+1))
 
