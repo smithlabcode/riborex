@@ -12,7 +12,7 @@ INSTALLATION
 ------------
 First, please make sure you have DESeq2 and edgeR installed.
 
-To install Riborex, download riborex\_1.0.0.tar.gz from releases, start R and type
+To install Riborex, download "riborex\_1.0.0.tar.gz" from releases, start R and type
 ```
   install.packages("riborex_1.0.0.tar.gz")
 ```
