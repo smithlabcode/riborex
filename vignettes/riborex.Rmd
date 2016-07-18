@@ -1,23 +1,31 @@
 ---
-title: "riborex Manual"
+title: "Riborex Manual"
+author: Wenzheng Li, Weili Wang, Philip J. Uren, Luiz OF Penalva, Andrew D. Smith 
 output: pdf_document
 ---
 
 # Introduction
+Riborex is a R package for identifying differentially translated genes from Ribo-seq
+data. Riborex integrates both RNA- and Ribo-seq read count data into a single
+generalized linear model (GLM) and generates a modified design matrix reflecting
+the integration. At its core, Riborex applies existing RNA-seq analysis
+tools such as edgeR, DESeq2 and Voom to this modified design matrix and identifies
+differential translation across conditions. 
 
-This is a manual to explain how the riborex is implemented based on current existing methods.  The requirement for input data format and parameters used in the implementation are specified in section `Data description`, and the implementation details are described in section `Implementations`. In this manual, we only show a dataset with two conditions, but the pipeline can also be used in data where there are multiple conditions involved.
+# Detailed example
+First, we need to load Riborex library.
+```{r message=FALSE}
+library(riborex)
+```
 
-Packed scripts that can be directly used are available on Github (`link`) for all the implementations mentioned here.
-
-
-# Data description
-
-Raw read counts from both Ribo-seq and RNA-seq are required as input. Here we will use a sample read count table for demonstration. We load the data from file `counts.RData` which is located in the same directory of this manual.
-
+The input for Riborex are two read count tables summarized from RNA-seq and
+Ribo-seq data respectively. The read count table should be organized as a
+data frame with rows correspond to genes and columns correspond to samples as
+shown below.
 ```{r}
-load('counts.RData')
-RNACntTable <- data$rna
-RiboCntTable <- data$ribo
+data(riborexdata)
+RNACntTable <- riborexdata$rna
+RiboCntTable <- riborexdata$ribo
 ```
 
 We can check the first five lines of the table:
@@ -25,140 +33,63 @@ We can check the first five lines of the table:
 head(RNACntTable,5)
 head(RiboCntTable,5)
 ```
-Since there are only two conditions in the sample, we specify the numbers of samples for case and control in both Ribo-seq and RNA-seq data. Those numbers will be used for test design in the following section.
 
+Then we need to prepare two vectors to indicate the treatments of samples in RNA- and Ribo-seq data. 
+Both RNA-seq and Ribo-seq can have different number of samples in control
+and treated condtions, and RNA-seq and Ribo-seq data can have different number of samples.
 ```{r}
-numCaseRNASmps <- 2
-numCtlRNASmps <- 2
-numCaseRiboSmps <- 2
-numCtlRiboSmps <- 2
+rnaCond <- c("control", "control", "treated", "treated")
+riboCond <- c("control", "control", "treated", "treated")
+```
+
+After the two read count table and two condition vectors are ready,
+we can use riborex (), and we can choose which engine to use.
+By default, DESeq2 is used as the engine if you don't specify the
+engine option. Use help(riborex) in R to see more details about this
+function.
+```{r message=FALSE, warning=FALSE}
+res.deseq2 <- riborex(RNACntTable, RiboCntTable, rnaCond, riboCond)
+```
+
+The format of the result is the same when DESeq2 is used in RNA-seq analysis.
+```{r results='hold'}
+res.deseq2
+```
+
+Also, you can use summary () for your results.
+```{r}
+summary(res.deseq2)
+```
+
+And results can be saved by:
+```{r}
+write.table(res.deseq2, "riborex_res_deseq2.txt", quote=FALSE)
 ```
 
 
-# Implementations
 
-Here we show how riborex is implemented based on edgeR, DESeq2 and voom, given the data and parameters we have in the previous seciton.
-
-### Based on edgeR
-To begin with, we load the library `edgeR` :
+If you want to use edgeR as your engine, you can use riborex () as:
 ```{r message=FALSE}
-library(edgeR)
+res.edgeR <- riborex(RNACntTable, RiboCntTable, rnaCond, riboCond, "edgeR")
 ```
 
-Next, we prepare the factors:
+The format of the result is the same when edgeR is used in RNA-seq analysis.
 ```{r}
-condition <- factor(c(rep(0, numCtlRNASmps), rep(1, numCaseRNASmps), 
-                    rep(0, numCtlRiboSmps), rep(1, numCaseRiboSmps)))
-dataType <- factor(c(rep(0, ncol(RNACntTable)), rep(1, ncol(RiboCntTable))))
-TE <- factor(c(rep(0, ncol(RNACntTable) + numCtlRiboSmps), 
-                  rep(1, numCaseRiboSmps))) # Indicator for differential TE
-```
-Combine Ribo-seq and RNA-seq read count tables and calculate the normalization factors:
-```{r}
-combCntTbl <- cbind(RNACntTable, RiboCntTable)
-dge <- DGEList(counts = combCntTbl)
-dge <- calcNormFactors(dge)
-```
-Then we specify the design matrix and estimate the dispersion for each gene:
-```{r}
-design <- model.matrix(~condition+dataType+TE)
-dge <- estimateDisp(dge, design)
-```
-The read counts are then fit into GLM, and the likelihood ratio test is performed to detect genes with differential translation efficiency.
-```{r}
-fit <- glmFit(dge, design)
-lrt <- glmLRT(fit)
-Results <- topTags(lrt, n=Inf)
-```
-For example, the 20 most significant genes can be called in this way:
-```{r}
-topGenes <- Results@.Data[[1]]
-head(topGenes,20)
-```
-The result can be exported:
-```{r}
-write.table(topGenes[rownames(RNACntTable),], "riborex_edgeR_result.txt", quote=FALSE)
+head(res.edgeR$table)
 ```
 
-### Based on DESeq2
-First, we load the library `DESeq2`:
+For edgeR engine, you can also choose to estimate dispersion of RNA-seq and Ribo-seq
+data separately by specifying engine as "edgeRD".
 ```{r message=FALSE}
-library(DESeq2)
+res.edgeRD <- riborex(RNACntTable, RiboCntTable, rnaCond, riboCond, "edgeRD")
 ```
-Next, we prepare the factors:
-```{r}
-condition <- factor(c(rep(0, numCtlRNASmps), rep(1, numCaseRNASmps), 
-                    rep(0, numCtlRiboSmps), rep(1, numCaseRiboSmps)))
-dataType <- factor(c(rep(0, ncol(RNACntTable)), rep(1, ncol(RiboCntTable))))
-TE <- factor(c(rep(0, ncol(RNACntTable) + numCtlRiboSmps), 
-                  rep(1, numCaseRiboSmps)))  # Indicator for differential TE
-```
-Combine Ribo-seq and RNA-seq read count tables and create design matrix:
-```{r}
-combCntTbl <- cbind(RNACntTable, RiboCntTable)
-combColData <- data.frame(condition = condition)
-combColData$dataType <- dataType
-combColData$TE <- TE
-rownames(combColData) <- colnames(combCntTbl)
-dds <- DESeqDataSetFromMatrix(countData = combCntTbl,
-                              colData = combColData,
-                              design = ~condition + dataType + TE)
-```
-Finally, we estimate dispersions, fit the data into model.
+
+If you want to use Voom as the engine, you can run riborex () as:
 ```{r message=FALSE}
-dds <- DESeq(dds)
-res <- results(dds)
-res
+res.voom <- riborex(RNACntTable, RiboCntTable, rnaCond, riboCond, "Voom")
 ```
-Please note that the rows all set to NAs are those where all counts equal to zero.
 
-
-The result can be exported:
+The format of the result is the same when Voom is used in RNA-seq analysis.
 ```{r}
-write.table(res[rownames(RNACntTable),], "riborex_DESeq2_result.txt", quote=FALSE)
+head(res.voom)
 ```
-
-
-### Based on voom
-First, we load the library `limma`:
-```{r message=FALSE}
-library(limma)
-```
-Next, we prepare the factors:
-```{r}
-condition <- factor(c(rep(0, numCtlRNASmps), rep(1, numCaseRNASmps), 
-                    rep(0, numCtlRiboSmps), rep(1, numCaseRiboSmps)))
-dataType <- factor(c(rep(0, ncol(RNACntTable)), rep(1, ncol(RiboCntTable))))
-TE <- factor(c(rep(0, ncol(RNACntTable) + numCtlRiboSmps), 
-                  rep(1, numCaseRiboSmps)))  # Indicator for differential TE
-```
-Combine Ribo-seq and RNA-seq read count tables and calculate the normalization factors:
-```{r}
-combCntTbl <- cbind(RNACntTable, RiboCntTable)
-dge <- DGEList(counts = combCntTbl)
-dge <- calcNormFactors(dge)
-```
-Then we specify the design matrix and apply the voom transformation:
-```{r}
-design <- model.matrix(~condition+dataType+TE)
-v <- voom(dge, design, plot=FALSE)
-```
-The transformed data is fit into the model and result is obtained:
-```{r}
-fit <- lmFit(v, design)
-fit <- eBayes(fit)
-topGenes <- topTable(fit, coef=ncol(design), number=Inf)
-```
-For example, the 20 most significant genes can be called in this way:
-```{r}
-head(topGenes,20)
-```
-The result can be exported:
-```{r}
-write.table(topGenes[rownames(RNACntTable),], "riborex_voom_result.txt", quote=FALSE)
-```
-
-
-
-
-
