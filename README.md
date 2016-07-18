@@ -8,6 +8,12 @@ DEPENDENCIES
 * DESeq2
 * edgeR
 
+INSTALLATION
+------------
+First, please make sure you have DESeq2 and edgeR installed.
+To install Riborex, download riborex\_1.0.0.tar.gz from releases, start R and type
+  install.packages("riborex\_1.0.0.tar.gz")
+
 Contacts and bug reports
 ------------------------
 Andrew D. Smith
