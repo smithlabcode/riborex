@@ -48,7 +48,7 @@ we can use riborex (), and we can choose which engine to use.
 By default, DESeq2 is used as the engine if you don't specify the
 engine option. Use help(riborex) in R to see more details about this
 function.
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE}
 res.deseq2 <- riborex(RNACntTable, RiboCntTable, rnaCond, riboCond)
 ```
 
