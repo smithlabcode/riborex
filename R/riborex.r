@@ -176,7 +176,12 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   ## glmFit and glmLRT
   fit <- glmFit(dge, design)
-  lrt <- glmLRT(fit, contrast=contrast)
+  if(is.null(contrast)) {
+    lrt <- glmLRT(fit)
+  } else {
+    coef = which(colnames(rnaCond) == contrast[1]) + 2 + ncol(rnaCond)
+    lrt <- glmLRT(fit, coef = coef)
+  }
   topGenes <- topTags(lrt, n=Inf)
 
   ## order results by gene names
@@ -247,7 +252,12 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   ## glmFit and glmLRT
   fit <- glmFit(dge, design=design, dispersion=dispersion)
-  lrt <- glmLRT(fit, contrast=contrast)
+  if(is.null(contrast)) {
+    lrt <- glmLRT(fit)
+  } else {
+    coef = which(colnames(rnaCond) == contrast[1]) + 2 + ncol(rnaCond)
+    lrt <- glmLRT(fit, coef = coef)
+  }
   topGenes <- topTags(lrt, n=Inf)
 
   ## order results by gene names
