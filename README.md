@@ -42,7 +42,7 @@ Before you send us the bug report though, please check the following:
 
 Copyright and License Information
 ---------------------------------
-Copyright (C) 2014 University of Southern California, Wenzheng Li, Weili Wang
+Copyright (C) 2016 University of Southern California, Wenzheng Li, Weili Wang
 and Andrew D. Smith
 
 Authors: Wenzheng Li, Weili Wang, Philip J. Uren, Luiz OF Penalva, Andrew D. Smith
