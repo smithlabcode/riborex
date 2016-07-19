@@ -93,3 +93,57 @@ The format of the result is the same when Voom is used in RNA-seq analysis.
 ```{r}
 head(res.voom)
 ```
+
+# Multi-factor experiment
+
+Since we don't find any available ribosome profiling data generated in a multi-factor experiement,
+here we generate a pseudo dataset to demonstrate the usage of riborex in a multi-factor experiment.
+The pseudo dataset have 8 samples in RNA-seq and Ribo-seq, and two factors are included.
+
+```{r}
+rna <- RNACntTable[,c(1,2,1,2,3,4,3,4)]
+ribo <- RiboCntTable[,c(1,2,1,2,3,4,3,4)]
+```
+
+For multi-factor experiment, we prepare two data frames to indicate the treatment under each factor.
+Here for the 8 samples in both RNA- and Ribo-seq experiement, the 3rd and 4th samples are treated with
+drug1 and the 7th and 8th samples are treated with drug2.
+```{r}
+rnaCond <- data.frame(factor1=(c("control1", "control1", "treated1", "treated1", 
+                                 "control1", "control1", "control1", "control1")),
+                      factor2=(c("control2", "control2", "control2", "control2", 
+                                 "control2", "control2", "treated2", "treated2")))
+
+riboCond <- data.frame(factor1=(c("control1", "control1", "treated1", "treated1",
+                                  "control1", "control1", "control1", "control1")),
+                       factor2=(c("control2", "control2", "control2", "control2", 
+                                  "control2", "control2", "treated2", "treated2")))
+```
+
+Also we need to prepare a contrast to specify the comparison we want to perform,
+for example, if we want to compare the influence of the usage of drug2.
+The contrast can be constructed as:
+```{r}
+contrast = c("factor2", "control2", "treated2")
+```
+
+Then riborex () is used with contrast specified.
+
+```{r message=FALSE, warning=FALSE}
+res.deseq2 <- riborex(rna, ribo, rnaCond, riboCond, "DESeq2", contrast = contrast)
+```
+
+We can see the summary of the result:
+```{r}
+summary(res.deseq2)
+```
+
+# Setup
+
+This analysis was conducted on
+
+```{r}
+sessionInfo()
+```
+
+
