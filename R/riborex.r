@@ -101,23 +101,16 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   message("combining design matrix")
 
-  ### expand rna covariate vector with 0s
-  expansion.rna <- rnaCond
-  for(i in 1:ncol(expansion.rna)) {
-    expansion.rna[,i] <- rnaCond[1,i]
-  }
-  expansion.rna <- as.data.frame(cbind(0, expansion.rna))
-  rnaCond <- cbind(rnaCond, expansion.rna)
-  colnames(rnaCond)[(numCond+1):ncol(rnaCond)] <- paste0("EXTRA",
-                                                           seq(numCond+1))
-
-  ### expand ribo covariate vector by repeating the same vector
-  riboCond <- cbind(riboCond, factor(1), riboCond)
-  colnames(riboCond)[(numCond+1):ncol(riboCond)] <- paste0("EXTRA",
-                                                            seq(numCond+1))
-
-  ### combine rna and ribo design matrix
   combinedCond <- rbind(rnaCond, riboCond)
+  combinedCond <- combinedCond[,rep(1:ncol(combinedCond),2)]
+  INTERCEPT <- c(rep("CONTROL", numRNASmps), rep("TREATED", numRiboSmps))
+  combinedCond <- cbind(combinedCond[1:numCond], INTERCEPT,
+                        combinedCond[(numCond+1):ncol(combinedCond)])
+  for( i in (numCond+2) : ncol(combinedCond)) {
+    combinedCond[1:numRNASmps,i] <- combinedCond[1,i]
+  }
+  colnames(combinedCond)[(numCond+2):ncol(combinedCond)] <- paste0("EXTRA",
+                                                                   seq(numCond))
   extendedConds <- colnames(combinedCond)
   fmla <- as.formula(paste("~", paste(extendedConds, collapse= "+")))
   dds <- DESeqDataSetFromMatrix(countData = combCntTbl,
@@ -131,6 +124,7 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   if(is.null(contrast)) {
     res <- results(dds)
   } else {
+    contrast[1] <- paste0("EXTRA", which(colnames(combinedCond)==contrast[1]))
     res <- results(dds, contrast=contrast)
   }
 
