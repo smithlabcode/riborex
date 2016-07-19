@@ -23,6 +23,10 @@ To install Riborex, download "riborex-1.2.3.tar.gz" from releases, start R and e
   install.packages("riborex-1.2.3.tar.gz")
 ```
 
+DOCUMENTATION
+-------------
+Please refer to vignettes/riborex.pdf for how to use riborex.
+
 Contacts and bug reports
 ------------------------
 Andrew D. Smith
