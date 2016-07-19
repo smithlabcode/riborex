@@ -102,8 +102,8 @@ here we generate a pseudo dataset to demonstrate the usage of riborex in a multi
 The pseudo dataset have 8 samples in RNA-seq and Ribo-seq, and two factors are included.
 
 ```{r}
-rna <- RNACntTable[,c(1,2,1,2,3,4,3,4)]
-ribo <- RiboCntTable[,c(1,2,1,2,3,4,3,4)]
+rna <- RNACntTable[,c(1,2,3,4,1,2,3,4)]
+ribo <- RiboCntTable[,c(1,2,3,4,1,2,3,4)]
 ```
 
 For multi-factor experiment, we prepare two data frames to indicate the treatment under each factor.
@@ -138,6 +138,16 @@ We can see the summary of the result:
 ```{r}
 summary(res.deseq2)
 ```
+
+edgeR and edgeRD can be used in a similar way.
+```{r message=FALSE}
+res.edgeR <- riborex(rna, ribo, rnaCond, riboCond, "edgeR", contrast = contrast)
+```
+```{r message=FALSE}
+res.edgeRD <- riborex(rna, ribo, rnaCond, riboCond, "edgeRD", contrast = contrast)
+```
+
+Currently, you can't choose Voom as the engine in a multi-factor experiment yet.
 
 # Setup
 

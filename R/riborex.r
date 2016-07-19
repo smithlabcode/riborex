@@ -72,7 +72,7 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
   if (!identical(colnames(rnaCond), colnames(riboCond)))
-      stop("RNA- and Ribo-seq data must have the same set of conditions")
+    stop("RNA- and Ribo-seq data must have the same set of conditions")
 
   if (ncol(rnaCntTable) != nrow(rnaCond))
     stop(paste("RNA-seq count table must have the",
@@ -144,7 +144,7 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
   if (!identical(colnames(rnaCond), colnames(riboCond)))
-      stop("RNA- and Ribo-seq data must have the same set of conditions")
+    stop("RNA- and Ribo-seq data must have the same set of conditions")
 
   if (ncol(rnaCntTable) != nrow(rnaCond))
     stop(paste("RNA-seq count table must have the",
@@ -200,7 +200,7 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
   if (!identical(colnames(rnaCond), colnames(riboCond)))
-      stop("RNA- and Ribo-seq data must have the same set of conditions")
+    stop("RNA- and Ribo-seq data must have the same set of conditions")
 
   if (ncol(rnaCntTable) != nrow(rnaCond))
     stop(paste("RNA-seq count table must have the",
@@ -276,7 +276,10 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   if (!is.data.frame(riboCond)) riboCond <- data.frame(cond = riboCond)
 
   if (!identical(colnames(rnaCond), colnames(riboCond)))
-      stop("RNA- and Ribo-seq data must have the same set of conditions")
+    stop("RNA- and Ribo-seq data must have the same set of conditions")
+
+  if (ncol(rnaCond) > 1)
+    stop("Voom is not supported in multi-factor experiment yet")
 
   if (ncol(rnaCntTable) != nrow(rnaCond))
     stop(paste("RNA-seq count table must have the",
