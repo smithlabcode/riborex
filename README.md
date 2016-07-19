@@ -18,7 +18,7 @@ source("https://bioconductor.org/biocLite.R")
 biocLite("DESeq2")
 biocLite("edgeR")
 ```
-To install Riborex, download "riborex\_1.0.0.tar.gz" from releases, start R and type
+To install Riborex, download "riborex\_1.0.0.tar.gz" from releases, start R and enter
 ```
   install.packages("riborex_1.0.0.tar.gz")
 ```
