@@ -11,7 +11,13 @@ DEPENDENCIES
 INSTALLATION
 ------------
 First, please make sure you have DESeq2 and edgeR installed.
-
+Start R and enter:
+```
+## try http:// if https:// URLs are not supported
+source("https://bioconductor.org/biocLite.R")
+biocLite("DESeq2")
+biocLite("edgeR")
+```
 To install Riborex, download "riborex\_1.0.0.tar.gz" from releases, start R and type
 ```
   install.packages("riborex_1.0.0.tar.gz")
