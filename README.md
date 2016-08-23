@@ -20,7 +20,7 @@ Start R and enter:
 ```
 To install Riborex, download "riborex-1.2.3.tar.gz" from releases, start R and enter
 ```
-  install.packages("riborex-1.2.3.tar.gz", type="source")
+  install.packages("riborex-1.2.3.tar.gz", repos=NULL, type="source")
 ```
 
 DOCUMENTATION
