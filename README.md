@@ -19,7 +19,7 @@ Start R and enter:
   biocLite("edgeR")
 ```
 To install Riborex, download "riborex-1.2.3.tar.gz" from releases
-from https://github.com/smithlabcode/RiboCop, start
+at https://github.com/smithlabcode/riborex, start
 a terminal and CD into the directory where you downloaded Riborex,
 start R and enter
 ```
