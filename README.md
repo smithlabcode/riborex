@@ -18,7 +18,10 @@ Start R and enter:
   biocLite("DESeq2")
   biocLite("edgeR")
 ```
-To install Riborex, download "riborex-1.2.3.tar.gz" from releases, start R and enter
+To install Riborex, download "riborex-1.2.3.tar.gz" from releases
+from https://github.com/smithlabcode/RiboCop, start
+a terminal and CD into the directory where you downloaded Riborex,
+start R and enter
 ```
   install.packages("riborex-1.2.3.tar.gz", repos=NULL, type="source")
 ```
