@@ -12,7 +12,7 @@ INSTALLATION
 ------------
 First, please make sure you have DESeq2 and edgeR installed.
 Start R and enter:
-```
+```r
   ## try http:// if https:// URLs are not supported
   source("https://bioconductor.org/biocLite.R")
   biocLite("DESeq2")
@@ -22,7 +22,7 @@ To install Riborex, download "riborex-1.2.3.tar.gz" from releases
 at https://github.com/smithlabcode/riborex, start
 a terminal and CD into the directory where you downloaded Riborex,
 start R and enter
-```
+```r
   install.packages("riborex-1.2.3.tar.gz", repos=NULL, type="source")
 ```
 Alternatively, you could also install `devtools` package and then install
@@ -64,7 +64,7 @@ Before you send us the bug report though, please check the following:
 
 Copyright and License Information
 ---------------------------------
-Copyright (C) 2016 University of Southern California, Wenzheng Li, Weili Wang
+Copyright (C) 2017 University of Southern California, Wenzheng Li, Weili Wang
 and Andrew D. Smith
 
 Authors: Wenzheng Li, Weili Wang, Philip J. Uren, Luiz OF Penalva, Andrew D. Smith
