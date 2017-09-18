@@ -31,6 +31,7 @@ Alternatively, you could also install `devtools` package and then install
 ```r
   install.packages('devtools')
   library(devtools)
+  options(unzip='internal')
   devtools::install_github('smithlabcode/riborex')
 ```
 
