@@ -7,6 +7,7 @@ DEPENDENCIES
 ------------
 * DESeq2
 * edgeR
+* fdrtool
 
 INSTALLATION
 ------------
@@ -17,6 +18,7 @@ Start R and enter:
   source("https://bioconductor.org/biocLite.R")
   biocLite("DESeq2")
   biocLite("edgeR")
+  biocLite('fdrtool')
 ```
 To install Riborex, download "riborex-1.2.3.tar.gz" from releases
 at https://github.com/smithlabcode/riborex, start

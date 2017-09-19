@@ -17,6 +17,19 @@
 # along with this software. If not, see
 # <http://www.gnu.org/licenses/>.
 
+correctNullDistribution <- function(results) {
+
+  message("correcting null distribution by reestimating pvalues")
+  results <- results[!is.na(results$padj), ]
+  results <- results[!is.na(results$pvalue), ]
+  resultsFDR <- fdrtool(results$stat, 
+                        statistic = 'normal',
+                        plot = F)
+  results[ , 'pvalue'] <- resultsFDR$pval
+  results[ ,'padj'] <- p.adjust(resultsFDR$pval, method = 'BH')
+  results
+}
+
 combineDesignMatrix <- function(rnaCond, riboCond) {
 
   message("combining design matrix")

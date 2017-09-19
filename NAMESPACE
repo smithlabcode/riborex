@@ -1,3 +1,4 @@
 import(DESeq2)
 import(edgeR)
+import(fdrtool)
 export(riborex)
