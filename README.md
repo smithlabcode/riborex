@@ -25,7 +25,7 @@ at https://github.com/smithlabcode/riborex, start
 a terminal and CD into the directory where you downloaded Riborex,
 start R and enter
 ```r
-  install.packages("riborex-1.2.3.tar.gz", repos=NULL, type="source")
+  install.packages("riborex-2.3.4.tar.gz", repos=NULL, type="source")
 ```
 Alternatively, you could also install `devtools` package and then install
 `riborex` to get latest changes :
