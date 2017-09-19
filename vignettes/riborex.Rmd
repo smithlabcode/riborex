@@ -25,8 +25,8 @@ data frame with rows correspond to genes and columns correspond to samples as
 shown below.
 ```{r}
 data(riborexdata)
-RNACntTable <- riborexdata$rna
-RiboCntTable <- riborexdata$ribo
+RNACntTable <- rna
+RiboCntTable <- ribo
 ```
 
 We can check the first five lines of the table:
@@ -126,7 +126,7 @@ riboCond.corrected
 ```
 
 The results from DESeq2 can be obtained as:
-```{r}
+```{r message=FALSE}
 res.deseq2.corrected <- riborex(RNACntTable.corrected, RiboCntTable.corrected, rnaCond.corrected, riboCond.corrected)
 ```
 
@@ -141,8 +141,12 @@ results.corrected <- correctNullDistribution(res.deseq2.corrected)
 ```
 We can see the p-value distribution after correction:
 ```{r}
-hist(results.corrected$pvalue, main = 'DESeq2 unadjusted p-values after correction', xlab='Corrected unadjusted p-values')
+hist(results.corrected$pvalue, main = 'DESeq2 unadjusted p-values after correction', 
+     xlab='Corrected unadjusted p-values')
 ```
+We can see after the correction, the distribution of p-values is as expected. And the adjusted
+pvalues are corrected also.
+
 
 # Multi-factor experiment
 
