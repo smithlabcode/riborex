@@ -1,0 +1,15 @@
+citEntry(entry="article",
+         title = "Riborex: fast and flexible identification of differential translation from Ribo-seq data",
+         author = personList( as.person("Wenzheng Li"),
+                              as.person("Weili Wang"),
+                              as.person("Philip J. Uren"),
+                              as.person("Luiz O.F. Penalva"),
+			      as.person("Andrew D. Smith") ),
+         year = 2017,
+         journal = "Bioinformatics",
+         doi = "10.1093/bioinformatics/btx047",
+         volume = 33,
+         pages = 1735-1737,
+         url = "https://www.ncbi.nlm.nih.gov/pubmed/28158331",
+         textVersion = "Li W, Wang W, Uren P, Penalva L, Smith A. 'Riborex: fast and flexible identification of differential translation from Ribo-seq data'. Bioinformatics. 2017 Jun 1;33(11):1735-7. PMID:28158331"
+)
