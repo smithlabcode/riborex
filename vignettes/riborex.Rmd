@@ -15,7 +15,7 @@ differential translation across conditions.
 
 # Detailed example
 First, we need to load Riborex library.
-```{r message=FALSE}
+```{r message=FALSE, warning=FALSE}
 library(riborex)
 ```
 
@@ -57,6 +57,16 @@ The format of the result is the same when DESeq2 is used in RNA-seq analysis.
 res.deseq2
 ```
 
+You can check the distribution p-values.
+```{r}
+hist(res.deseq2$pvalue, main = 'DESeq2 unadjusted p-values', xlab='Unadjusted p-values')
+```
+
+We can see for this dataset, the p-value distribution is as expected based on DESeq2 manual which
+is uniformly distribution with differrentially expressed genes enriched with small p-values. We will
+show another dataset later for which the p-value distribution is skew to the right and how it can be
+fixed with fdrtool.
+
 Also, you can use summary () for your results.
 ```{r}
 summary(res.deseq2)
@@ -93,6 +103,45 @@ res.voom <- riborex(RNACntTable, RiboCntTable, rnaCond, riboCond, "Voom")
 The format of the result is the same when Voom is used in RNA-seq analysis.
 ```{r}
 head(res.voom)
+```
+
+# Case-study with "incorrect" p-value distribution
+```{r}
+RNACntTable.corrected <- rna.null
+RiboCntTable.corrected <- ribo.null
+```
+
+We can check the first five lines of the table:
+```{r}
+head(RNACntTable.corrected)
+head(RiboCntTable.corrected)
+```
+
+The condition vectors can be created as:
+```{r}
+rnaCond.corrected <- c(rep('T0', 3), rep('T24',3))
+riboCond.corrected <- rnaCond.corrected
+rnaCond.corrected
+riboCond.corrected
+```
+
+The results from DESeq2 can be obtained as:
+```{r}
+res.deseq2.corrected <- riborex(RNACntTable.corrected, RiboCntTable.corrected, rnaCond.corrected, riboCond.corrected)
+```
+
+We can check the p-value distribution as:
+```{r}
+hist(res.deseq2.corrected$pvalue, main = 'DESeq2 unadjusted p-values', xlab='Unadjusted p-values')
+```
+We can see from the histogram that the distribution of p-values is skew to the right, that means
+the null distribution is not "correct", we can fix it by reestimating the p-values using fdrtool:
+```{r}
+results.corrected <- correctNullDistribution(res.deseq2.corrected)
+```
+We can see the p-value distribution after correction:
+```{r}
+hist(results.corrected$pvalue, main = 'DESeq2 unadjusted p-values after correction', xlab='Corrected unadjusted p-values')
 ```
 
 # Multi-factor experiment
