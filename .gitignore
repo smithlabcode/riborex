@@ -1,3 +1,4 @@
 Read-and-delete-me
 .RData
 .Rhistory
+vignettes/*.txt
