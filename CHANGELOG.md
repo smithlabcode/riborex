@@ -10,3 +10,5 @@ All notable changes to this project will be documented in this file
 
 ## [1.2.3] - 2016-07-19
 ### Initial release
+
+[Unreleased]: https://github.com/wenzhenl/riborex/compare/v1.2.3...HEAD
