@@ -77,6 +77,11 @@ dataFrameToDesignMatrix <- function(cond) {
 DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
                       contrast=NULL, minMeanCount=1) {
 
+  ### append sample name with .rna or .ribo
+  ### in case user uses sample sample name
+  colnames(rnaCntTable) <- paste0(colnames(rnaCntTable), ".rna")
+  colnames(riboCntTable) <- paste0(colnames(riboCntTable), ".ribo")
+
   ### input validation
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
     stop ("RNA- and Ribo-seq data must have the same set of genes")
@@ -108,7 +113,7 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
   numCond <- ncol(rnaCond)
   numRNASmps <- nrow(rnaCond)
   numRiboSmps <- nrow(riboCond)
-
+  
   ### combine counts
   combCntTbl <- cbind(rnaCntTable, riboCntTable)
 
@@ -148,6 +153,11 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
 edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
                      contrast=NULL, minMeanCount=1) {
+
+  ### append sample name with .rna or .ribo
+  ### in case user uses sample sample name
+  colnames(rnaCntTable) <- paste0(colnames(rnaCntTable), ".rna")
+  colnames(riboCntTable) <- paste0(colnames(riboCntTable), ".ribo")
 
   ### input validation
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
@@ -204,6 +214,11 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
 edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
                       contrast=NULL, minMeanCount=1) {
+
+  ### append sample name with .rna or .ribo
+  ### in case user uses sample sample name
+  colnames(rnaCntTable) <- paste0(colnames(rnaCntTable), ".rna")
+  colnames(riboCntTable) <- paste0(colnames(riboCntTable), ".ribo")
 
   ### input validation
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
@@ -280,6 +295,11 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
 voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
                     contrast=NULL, minMeanCount=1) {
+
+  ### append sample name with .rna or .ribo
+  ### in case user uses sample sample name
+  colnames(rnaCntTable) <- paste0(colnames(rnaCntTable), ".rna")
+  colnames(riboCntTable) <- paste0(colnames(riboCntTable), ".ribo")
 
   ### input validation
   if (!identical(rownames(rnaCntTable), rownames(riboCntTable)))
