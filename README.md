@@ -1,16 +1,15 @@
-Riborex
-=======
+# Riborex
 
 Riborex is a R package for identification of differential translation from Ribo-seq data.
 
-DEPENDENCIES
-------------
+--------------------------------------------------------
+
+## DEPENDENCIES
 * DESeq2
 * edgeR
 * fdrtool
-
-INSTALLATION
-------------
+--------------------------------------------------------
+## INSTALLATION
 First, please make sure you have DESeq2 and edgeR installed.
 Start R and enter:
 ```r
@@ -37,14 +36,12 @@ Alternatively, you could also install `devtools` package and then install
   options(unzip='internal')
   devtools::install_github('smithlabcode/riborex')
 ```
+--------------------------------------------------------
 
-
-DOCUMENTATION
--------------
+## DOCUMENTATION
 Please refer to vignettes/riborex.pdf for how to use riborex.
 
-Contacts and bug reports
-------------------------
+## Contacts and bug reports
 Andrew D. Smith
 andrewds@usc.edu
 
@@ -65,9 +62,8 @@ Before you send us the bug report though, please check the following:
    the bug; we will need your input data to reproduce the problem, and the
    smaller you can make it, the easier it will be.
 
-
-Copyright and License Information
----------------------------------
+--------------------------------------------------------
+## Copyright and License Information
 Copyright (C) 2017 University of Southern California, Wenzheng Li, Weili Wang
 and Andrew D. Smith
 
