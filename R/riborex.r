@@ -104,8 +104,8 @@ DESeq2Rex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
     stop("minMeanCount must at least be 1")
 
   ### filter out low read count
-  keep.rna <- which(rowMeans(rnaCntTable) >= minMeanCount)
-  keep.ribo <- which(rowMeans(riboCntTable) >= minMeanCount)
+  keep.rna <- rownames(rnaCntTable)[rowMeans(rnaCntTable) >= minMeanCount]
+  keep.ribo <- rownames(riboCntTable)[rowMeans(riboCntTable) >= minMeanCount]
   keep <- intersect(keep.rna, keep.ribo)
   rnaCntTable <- rnaCntTable[keep,]
   riboCntTable <- riboCntTable[keep,]
@@ -181,8 +181,8 @@ edgeRRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
     stop("minMeanCount must at least be 1")
 
   ### filter out low read count
-  keep.rna <- which(rowMeans(rnaCntTable) >= minMeanCount)
-  keep.ribo <- which(rowMeans(riboCntTable) >= minMeanCount)
+  keep.rna <- rownames(rnaCntTable)[rowMeans(rnaCntTable) >= minMeanCount]
+  keep.ribo <- rownames(riboCntTable)[rowMeans(riboCntTable) >= minMeanCount]
   keep <- intersect(keep.rna, keep.ribo)
   rnaCntTable <- rnaCntTable[keep,]
   riboCntTable <- riboCntTable[keep,]
@@ -242,8 +242,8 @@ edgeRDRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
     stop("minMeanCount must at least be 1")
 
   ### filter out low read count
-  keep.rna <- which(rowMeans(rnaCntTable) >= minMeanCount)
-  keep.ribo <- which(rowMeans(riboCntTable) >= minMeanCount)
+  keep.rna <- rownames(rnaCntTable)[rowMeans(rnaCntTable) >= minMeanCount]
+  keep.ribo <- rownames(riboCntTable)[rowMeans(riboCntTable) >= minMeanCount]
   keep <- intersect(keep.rna, keep.ribo)
   rnaCntTable <- rnaCntTable[keep,]
   riboCntTable <- riboCntTable[keep,]
@@ -326,8 +326,8 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
     stop("minMeanCount must at least be 1")
 
   ### filter out low read count
-  keep.rna <- which(rowMeans(rnaCntTable) >=  minMeanCount)
-  keep.ribo <- which(rowMeans(riboCntTable) >=  minMeanCount)
+  keep.rna <- rownames(rnaCntTable)[rowMeans(rnaCntTable) >= minMeanCount]
+  keep.ribo <- rownames(riboCntTable)[rowMeans(riboCntTable) >= minMeanCount]
   keep <- intersect(keep.rna, keep.ribo)
   rnaCntTable <- rnaCntTable[keep,]
   riboCntTable <- riboCntTable[keep,]
@@ -341,7 +341,11 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   message("applying Voom to modified design matrix")
 
-  v <- voom(dge, design, plot=FALSE)
+  rnaZ = c(rep(1, nrow(rnaCond)), rep(0, nrow(riboCond)))
+  riboZ = c(rep(0, nrow(rnaCond)), rep(1, nrow(riboCond)))
+  Z = cbind(rnaZ, riboZ)
+  v <- voomWithQualityWeights(dge, design=design, normalization="none",
+                              var.design=Z, plot=FALSE)
   fit <- lmFit(v, design)
   if(!is.null(contrast)) {
     fit <- contrasts.fit(fit, contrasts = contrast)
