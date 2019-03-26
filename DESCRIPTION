@@ -1,8 +1,8 @@
 Package: riborex
 Type: Package
 Title: Identification of differential translation from Ribo-seq data
-Version: 2.3.4
-Date: 2016-07-11
+Version: 2.4.0
+Date: 2019-03-25
 Author: Wenzheng Li, Weili Wang and Andrew D. Smith
 Maintainer: Wenzheng Li <wenzhenl@usc.edu>
 Description: Fast and flexible identification of differentially translated
