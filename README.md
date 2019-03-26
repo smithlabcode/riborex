@@ -10,8 +10,12 @@ Riborex is a R package for identification of differential translation from Ribo-
 * fdrtool
 --------------------------------------------------------
 ## INSTALLATION
-First, please make sure you have DESeq2 and edgeR installed.
-Start R and enter:
+We strongly recommend that you install Riborex via conda:
+```bash
+   conda install -c bioconda riborex
+```
+To install locally, please make sure you have DESeq2 and edgeR installed.
+Then start R and enter:
 ```r
   ## try http:// if https:// URLs are not supported
   source("https://bioconductor.org/biocLite.R")
