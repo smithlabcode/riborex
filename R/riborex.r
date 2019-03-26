@@ -341,11 +341,7 @@ voomRex <- function(rnaCntTable, riboCntTable, rnaCond, riboCond,
 
   message("applying Voom to modified design matrix")
 
-  rnaZ = c(rep(1, nrow(rnaCond)), rep(0, nrow(riboCond)))
-  riboZ = c(rep(0, nrow(rnaCond)), rep(1, nrow(riboCond)))
-  Z = cbind(rnaZ, riboZ)
-  v <- voomWithQualityWeights(dge, design=design, normalization="none",
-                              var.design=Z, plot=FALSE)
+  v <- voom(dge, design, plot=FALSE)
   fit <- lmFit(v, design)
   if(!is.null(contrast)) {
     fit <- contrasts.fit(fit, contrasts = contrast)
