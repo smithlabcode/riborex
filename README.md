@@ -4,6 +4,10 @@ Riborex is a R package for identification of differential translation from Ribo-
 
 --------------------------------------------------------
 
+[Online Paper](https://academic.oup.com/bioinformatics/article/33/11/1735/2964727) | [PDF](https://watermark.silverchair.com/btx047.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAr0wggK5BgkqhkiG9w0BBwagggKqMIICpgIBADCCAp8GCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMEeGzK92KGEWtk0FoAgEQgIICcFUmPpYJo1tGujsBoP4lYse6EnU5MCy_Hp5z2ae7rC9jSUgL4I_UscKpEadF2YIwltYzPiN63ZHToP6ec-l8MPEDHwrFISgfjFkYiz7CdWwTLFo-1zKx449YprMc7gPtXGUjF4koXDC0VUKEAz5Df6litXeErwErQfN1MvTfapzv6e2uocdeaIb_gVHP8_SOgzivRHJ5iFDunIjS_43s_G5N42L4lIOAaEl_5gKQ7MmBoH04Nzd8yc8GX9Q6D5gBri-Lqsu3HM5x4_EuGRrAp8dP40rtwCBF7yoPj_VHhirTgN1XP82JZJO7QWzqnsZXJ6n9w4lOTgxpY24DONTXGAVAAf-CwkuIK58cvqvrulZwOwj9cikYExj5sXpYY9J4u1y-wVufDIFBLa912qaVRJV9h7k3nGihq7MJkpNKLwTzqj35VbtmGDgqoDJMQxjs9K5WdSCW4Ecc6uPFQk9XwC7PzYAiJIRn7mjVUjyciBKe9XRvcpJbK4C3nl__XDRhM9sFmNlA7mwPhIePhOhzhLWACUSCltLBPiRNDNv34VB_Rj_--SPxG5gnRmfqGew7GeDYUo_W-rjvCC0PeBASozZUe3h6sT4s7eIXwWLbzuJ_ujWcXM7jLaqCjJgl-SGUcEYUiWUvXK9YfGNshpgAf99cCpu4mNhGxPL672URz1_RhY2kS2zHbG84MOgdd-SqvarTGYugArsUN6AlMXvHTR5ZIWr4PE47FjOYPCn4NS9QV-42dpj1a7TuJSsDlbDdoHdXcxXTTFhO_wfKjVy_OCXR1jrqxSHTURi3NR6yF0W4mO-oCuTM7DS4RtI1LvnhDA) | [Supplementary File](https://oup.silverchair-cdn.com/oup/backfile/Content_public/Journal/bioinformatics/33/11/10.1093_bioinformatics_btx047/3/btx047_supp.pdf?Expires=1620962473&Signature=h3eYZdiu4ddVx5L-NXUsO123Ej50pLrumpFn74i1FjsaS7wbQNqrJqMZg4G9XKryOWUJXNBDLxeTnYBXOKPHW5O1QFuDS6k8r8gvjwSMpEtOMdR0wP1tsnhKKi~Oi8sBIPEdHalsQcJCZMZXkNuKpav7u~dgDZ2pUkhiaGoOyLomnBHfafjM79-Lprnk4NLFO3KzOOZ0-IPtSvVDYczqEo8HascrsO1B3Rbs-1aQdQv8~hoTAfV7Y8hXOA3XO2WSO1Kp16qrgmqUWCtqJUfd6QZPlwy~JbZ4OS9HPjTNyM4e0JVWLuWNsjN4~aQixjZ9S9JEzEmmnBHGndxaH6Xs~g__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA)
+
+--------------------------------------------------------
+
 ## DEPENDENCIES
 * DESeq2
 * edgeR
